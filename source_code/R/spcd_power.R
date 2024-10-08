@@ -228,8 +228,15 @@ generate_ed_table <- function(subjects_vector,
 
 ###################
 #power
-ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
-                               diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5))
+if (options_replicas == 1000){
+  ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
+                                 diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5))
+}
+
+if (options_replicas == 5000){
+  ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
+                                 diff_stage2_vector = c(0))
+}
 
 # ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
 #                                diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5))
