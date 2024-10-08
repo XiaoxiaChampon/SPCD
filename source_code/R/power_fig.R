@@ -48,6 +48,13 @@ continuous_power_logmap <- power_data(final_table, 5, 6)
 continuous_power_expmap <- power_data(final_table, 7, 8)
 
 
+
+binary_power_data2 <- power_data(final_table, 9, 10)
+continuous_power_data2 <- power_data(final_table, 11, 12)
+continuous_power_logmap2 <- power_data(final_table, 13, 14)
+continuous_power_expmap2 <- power_data(final_table, 15, 16)
+
+
 ####################################################
 library(ggplot2)
 library(data.table)
@@ -82,3 +89,8 @@ power_fig_fun  (binary_power_data)
 power_fig_fun  (continuous_power_data)
 power_fig_fun  (continuous_power_logmap)
 power_fig_fun  (continuous_power_expmap)
+
+power_fig_fun  (binary_power_data2)
+power_fig_fun  (continuous_power_data2)
+power_fig_fun  (continuous_power_logmap2)
+power_fig_fun  (continuous_power_expmap2)

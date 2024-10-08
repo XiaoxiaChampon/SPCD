@@ -26,20 +26,9 @@
 #
 ##############################################################
 
-
-
-library(mgcv)
-library(fda)
-library(fda.usc)
-#library(devtools)
-#install_github("stchen3/glmmVCtest")
-#library("glmmVCtest")
-#library(RLRsim)
-library(MASS)
-library(splines)
 library(parallel)
 library(stats)
-library(matrixStats)
+
 #library(pracma)
 
 
@@ -53,9 +42,7 @@ option_list <- list(
   make_option(c("-n", "--numcpus"), type="integer", default=32,
               help="Num CPUs", metavar="NUMCPUS"),
   make_option(c("-r", "--replicas"), type="integer", default=100,
-              help="Num Replicas", metavar="NUMREPLICAS"),
-  make_option(c("-l", "--timelength"), type="integer", default=90,
-              help="Time Length", metavar="TIMELENGTH")
+              help="Num Replicas", metavar="NUMREPLICAS")
 )
 
 #####need for hazel
@@ -72,7 +59,7 @@ options <- parse_args(parser)
 
 options_jobid <- 1
 options_numcpus <- 10
-options_replicas <- 6
+options_replicas <- 5000
 # Use the options
 cat("Job Idx:", options_jobid, "\n")
 cat("Num CPUs:", options_numcpus, "\n")
@@ -136,18 +123,28 @@ spcd_testing_simulation <- function (num_replicas,
   cat("CFD Testing Simulation \nNum Replicas:\t", num_replicas)
   #num_replicas=2
   result_all <- foreach (number_simulation = 1:num_replicas, .combine = cbind, .init = NULL,
-                         .packages=c("splines","mgcv","fda","fda.usc","MASS")) %dorng% {
+                         .packages=c("MASS")) %dorng% {
                            
                            source("./source_code/R/data_generator.R")
                            source("./source_code/R/spcd_testing.R")
                                                  
                            #######################################################################
                            #spcd_data_test <- spcd_data(n, n_groups, diff_stage1, diff_stage2)
-                           non_responders <- spcd_data(num_indvs, n_groups, diff_stage1, diff_stage2)
+                           example_data <- spcd_data(num_indvs, n_groups, diff_stage1, diff_stage2)
+                           
+                           non_responders <- example_data$spcd_data
                            result <- hypothesis_testing (non_responders)
                            
+                           non_responders2 <- example_data$spcd_data_yes
+                           result2 <- hypothesis_testing (non_responders2)
+                           
+                           # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
+                           #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2))
+                           
                            return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
-                                       "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2))
+                                       "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2,
+                                       "binary_result2"=result2$binary_result,"continuous_result2"=result2$continuous_result,
+                                       "continous_map12"=result2$continous_map1,"continous_map22"=result2$continous_map2))
                          } 
   #T_rep <- do.call(rbind, T_rep)
   return(result_all)
@@ -156,9 +153,8 @@ spcd_testing_simulation <- function (num_replicas,
 
 #set.seed(123456 + 10 * options_jobid)
 # set.seed(123456 + 10 * 2)
- # result_all <- spcd_testing_simulation  (5,
- #                                      300,1.5,
- #                                      n_groups=3)
+ # result_all <- spcd_testing_simulation  (num_replicas = 6,num_indvs= 300,diff_stage2 = 1.5,n_groups = 3,
+ #                                         diff_stage1 = 0.5)
 # simulation_pvalues <- matrix(unlist(result_all), nrow=8)
 # power <- apply(simulation_pvalues, 1, function(x){sum(x<=0.05)/length(simulation_pvalues[1,])})
 # power01 <- apply(simulation_pvalues, 1, function(x){sum(x<=0.1)/length(simulation_pvalues[1,])})
@@ -181,7 +177,8 @@ run_experiment_hypothesis <- function(exp_idx,
                                                  diff_stage2 =  diff_stage2
                                                 )
   
-  simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=8)
+  #simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=8)
+  simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=16)
   save(simulation_pvalues, file = paste0("./", scenario_folder, "/",
                                          
                                        
@@ -233,6 +230,9 @@ generate_ed_table <- function(subjects_vector,
 #power
 ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
                                diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5))
+
+# ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
+#                                diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5))
 
 ed_table <- ed_table1
 ###################
