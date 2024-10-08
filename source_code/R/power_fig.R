@@ -69,7 +69,7 @@ power_fig_fun <- function (binary_power_data){
     guides(color = guide_legend(title = "Subjects")) +
     theme(text = element_text(size = 20))  +
     theme(
-      legend.position = c(.02, .95),
+      legend.position = c(.02, .98),
       legend.justification = c("left", "top"),
       legend.box.just = "right",
       legend.margin = margin(6, 6, 6, 6)

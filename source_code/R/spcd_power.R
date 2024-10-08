@@ -19,10 +19,10 @@
 # THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ######################################################################
 #
-# Purpose: Simulations for Categorical Functional Data Hypothesis Testing when consdiering a randome variable
+# Purpose: Simulations for Hypothesis testing SPCD
 #         
 # Author:  Xiaoxia Champon
-# Date: 8/27/2024
+# Date: 09/27/2024
 #
 ##############################################################
 
