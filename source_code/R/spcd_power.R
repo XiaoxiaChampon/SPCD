@@ -54,10 +54,6 @@ option_list <- list(
               help="Num CPUs", metavar="NUMCPUS"),
   make_option(c("-r", "--replicas"), type="integer", default=100,
               help="Num Replicas", metavar="NUMREPLICAS"),
-  # make_option(c("-s", "--subjects"), type="integer", default=100,
-  #             help="Num Subjects/Individuals", metavar="NUMSUBJECTS"),
-  # make_option(c("-b", "--boots"), type="integer", default=100,
-  #             help="Num Bootstraps", metavar="NUMBOOTS"),
   make_option(c("-l", "--timelength"), type="integer", default=90,
               help="Time Length", metavar="TIMELENGTH")
 )
@@ -71,16 +67,12 @@ options <- parse_args(parser)
 # options_numcpus <- options$numcpus
 # options_replicas <- options$replicas
 # #options_subjects <- options$subjects
-# # options_boots <- options$boots
-# options_timelength <- options$timelength
+
 #####################
 
 options_jobid <- 1
 options_numcpus <- 10
 options_replicas <- 6
-# options_subjects <- 100
-# options_boots <- 100
-#options_timelength <- 90
 # Use the options
 cat("Job Idx:", options_jobid, "\n")
 cat("Num CPUs:", options_numcpus, "\n")
@@ -145,10 +137,10 @@ spcd_testing_simulation <- function (num_replicas,
   #num_replicas=2
   result_all <- foreach (number_simulation = 1:num_replicas, .combine = cbind, .init = NULL,
                          .packages=c("splines","mgcv","fda","fda.usc","MASS")) %dorng% {
-                           # result_all <- foreach (number_simulation = 1:num_replicas, .combine = cbind, .init = NULL) %dorng% {
+                           
                            source("./source_code/R/data_generator.R")
                            source("./source_code/R/spcd_testing.R")
-                           #T_rep <- foreach(this_row = 1:num_replicas ) %dorng%                        
+                                                 
                            #######################################################################
                            #spcd_data_test <- spcd_data(n, n_groups, diff_stage1, diff_stage2)
                            non_responders <- spcd_data(num_indvs, n_groups, diff_stage1, diff_stage2)
@@ -164,9 +156,9 @@ spcd_testing_simulation <- function (num_replicas,
 
 #set.seed(123456 + 10 * options_jobid)
 # set.seed(123456 + 10 * 2)
- result_all <- spcd_testing_simulation  (5,
-                                      300,1.5,
-                                      n_groups=3)
+ # result_all <- spcd_testing_simulation  (5,
+ #                                      300,1.5,
+ #                                      n_groups=3)
 # simulation_pvalues <- matrix(unlist(result_all), nrow=8)
 # power <- apply(simulation_pvalues, 1, function(x){sum(x<=0.05)/length(simulation_pvalues[1,])})
 # power01 <- apply(simulation_pvalues, 1, function(x){sum(x<=0.1)/length(simulation_pvalues[1,])})
@@ -235,23 +227,13 @@ generate_ed_table <- function(subjects_vector,
   return(ed_table_ret)
 }
 
-########
-#type I error rate
-# ed_table1=generate_ed_table()
-# ed_table2=generate_ed_table(fl_choice_vector = c("200","7","21"),
-#                                                          test_type_vector = c("Functional"))
-# 
-# 
-# ed_table <- rbind(ed_table1,ed_table2)
+
 
 ###################
 #power
 ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
                                diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5))
-# ed_table2 <- generate_ed_table(subjects_vector = c(100, 300, 500),
-#                                fl_choice_vector = c("200","7","21"),
-#                                test_type_vector = c("Functional"))
-#ed_table <- rbind(ed_table1,ed_table2)
+
 ed_table <- ed_table1
 ###################
 
@@ -279,9 +261,6 @@ for (row_index in 1:dim(ed_table)[1]){
 
 final_table <- cbind(ed_table, all_experiment_outputs)
 
-
-# mu1_coef=c(16.1149728, -85.34458, -87.923671)
-# mu2_coef=c(-97.98046, 50.39012, 58.19331 )
 save(final_table,file =paste0("./", final_table_folder, "/spcd_power_",
                               
                               "_", options_replicas,
@@ -300,32 +279,4 @@ if(run_parallel)
   initialized_parallel <- FALSE
 }
 
-
-###final_table[,1:4]
-# final_table[,1:4]
-# fl_choice test_type num_subjects num_timepoints
-# experiment_output           6 Inclusion          100             90
-# experiment_output.1        21 Inclusion          100             90
-# experiment_output.2         6 Inclusion          300             90
-# experiment_output.3        21 Inclusion          300             90
-# experiment_output.4         6 Inclusion          500             90
-# experiment_output.5        21 Inclusion          500             90
-# sum(unlist(final_table[1,]$power)<=0.05)/length(unlist(final_table[1,]$power))
-# sum(unlist(final_table[3,]$power)<=0.05)/length(unlist(final_table[3,]$power))
-# sum(unlist(final_table[5,]$power)<=0.05)/length(unlist(final_table[5,]$power))
-#0.0398,0.0552,0.0564
-# 
-# sum(unlist(final_table[2,]$power)<=0.05)/length(unlist(final_table[2,]$power))
-# sum(unlist(final_table[4,]$power)<=0.05)/length(unlist(final_table[4,]$power))
-# sum(unlist(final_table[6,]$power)<=0.05)/length(unlist(final_table[6,]$power))
-#0.042,  0.0516, 0.058
-
-# sum(unlist(final_table[1,]$power)<=0.1)/length(unlist(final_table[1,]$power))
-# sum(unlist(final_table[3,]$power)<=0.1)/length(unlist(final_table[3,]$power))
-# sum(unlist(final_table[5,]$power)<=0.1)/length(unlist(final_table[5,]$power))
-#0.0962, 0.1156,  0.1166
-# sum(unlist(final_table[2,]$power)<=0.1)/length(unlist(final_table[2,]$power))
-# sum(unlist(final_table[4,]$power)<=0.1)/length(unlist(final_table[4,]$power))
-# sum(unlist(final_table[6,]$power)<=0.1)/length(unlist(final_table[6,]$power))
-#0.0944, 0.1146, 0.1196
 
