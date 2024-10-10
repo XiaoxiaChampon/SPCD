@@ -108,18 +108,29 @@ ensure_dir_exist <- function(directory_path){
   }
 }
 
-scenario_folder = "spcd_test"
+# scenario_folder = "spcd_test"
+# ensure_dir_exist(scenario_folder)
+# 
+# final_table_folder = paste0("output_spcd_test")
+# ensure_dir_exist(final_table_folder)
+
+scenario_folder = "spcd_test_typeI"
 ensure_dir_exist(scenario_folder)
 
-final_table_folder = paste0("output_spcd_test")
+final_table_folder = paste0("output_spcd_test_typeI")
 ensure_dir_exist(final_table_folder)
 
 
-spcd_testing_simulation <- function (num_replicas, 
-                                     num_indvs,
-                                     diff_stage2 ,
-                                     n_groups = 3,
-                                     diff_stage1 = 0.5){
+# spcd_testing_simulation <- function (num_replicas, 
+#                                      num_indvs,
+#                                      diff_stage2 ,
+#                                      n_groups = 3,
+#                                      diff_stage1 = 0.5){
+  spcd_testing_simulation <- function (num_replicas, 
+                                       num_indvs,
+                                       diff_stage2 ,
+                                       n_groups = 3,
+                                       diff_stage1 = 0){
   cat("CFD Testing Simulation \nNum Replicas:\t", num_replicas)
   #num_replicas=2
   result_all <- foreach (number_simulation = 1:num_replicas, .combine = cbind, .init = NULL,
@@ -130,6 +141,10 @@ spcd_testing_simulation <- function (num_replicas,
                                                  
                            #######################################################################
                            #spcd_data_test <- spcd_data(n, n_groups, diff_stage1, diff_stage2)
+                           # num_indvs <- 900
+                           # n_groups <- 3
+                           # diff_stage1 <- 0
+                           # diff_stage2 <- 0
                            example_data <- spcd_data(num_indvs, n_groups, diff_stage1, diff_stage2)
                            
                            non_responders <- example_data$spcd_data
@@ -214,9 +229,9 @@ run_experiment_hypothesis <- function(exp_idx,
 
 begin_exp_time <- Sys.time()
 
-set.seed(123456 + 10 * options_jobid)
+#set.seed(123456 + 10 * options_jobid)
 
-
+set.seed(123456 + 6 * options_jobid)
 generate_ed_table <- function(subjects_vector,
                               diff_stage2_vector
                               ){
@@ -234,7 +249,9 @@ if (options_replicas == 1000){
 }
 
 if (options_replicas == 5000){
-  ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
+  # ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
+  #                                diff_stage2_vector = c(0))
+  ed_table1 <- generate_ed_table(subjects_vector = c(600,900),
                                  diff_stage2_vector = c(0))
 }
 

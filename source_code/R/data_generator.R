@@ -44,8 +44,8 @@ mapping_function_2 <- function(Y_cont) {
 
 spcd_data <- function(n, n_groups, diff_stage1, diff_stage2){
   # Define parameters
-  # n <- 300  # Total number of subjects
-  # n_groups <- 3  # Two treatments and one placebo
+  #  n <- 600  # Total number of subjects
+  #  n_groups <- 3  # Two treatments and one placebo
   # diff_stage1 <- 0.5
   # diff_stage2 <- 1.5
   n_subjects_per_group <- n / n_groups  # Subjects per group
@@ -68,7 +68,8 @@ spcd_data <- function(n, n_groups, diff_stage1, diff_stage2){
   
   # Define treatment effects for Stage 1 (binary and continuous responses)
   treatment_effect_bin_stage1 <- c(0, 4, 7)  # Binary response effects
-  treatment_effect_cont_stage1 <- c(0, 1, 1+diff_stage1)   # Continuous response effects
+  #treatment_effect_cont_stage1 <- c(0, 1, 1+diff_stage1)   # Continuous response effects
+  treatment_effect_cont_stage1 <- c(0, 0, 0+diff_stage1)   # Continuous response effects
   
   
   # Simulate continuous response in Stage 1
@@ -123,7 +124,7 @@ spcd_data <- function(n, n_groups, diff_stage1, diff_stage2){
     filter(treatment_stage1 == 0 & binary_response_stage1 == 0)  # Non-responders from placebo group
   
   non_responders2_map <- covariates %>%
-    filter(treatment_stage1 == 0 & binary_response_stage1map_indivdual == 0)  # Non-responders from placebo group
+    filter(treatment_stage1 == 0 & binary_response_stage1map_indivdual == 0 )  # Non-responders from placebo group
   
   
   ####
@@ -144,7 +145,8 @@ spcd_data <- function(n, n_groups, diff_stage1, diff_stage2){
     
     # Define treatment effects for Stage 2
     treatment_effect_bin_stage2 <- c(0, 6, 10)  # Binary response effects in Stage 2
-    treatment_effect_cont_stage2 <- c(0, 3, 3+diff_stage2)  # Continuous response effects in Stage 2
+    #treatment_effect_cont_stage2 <- c(0, 3, 3+diff_stage2)  # Continuous response effects in Stage 2
+    treatment_effect_cont_stage2 <- c(0, 0, 0+diff_stage2)  # Continuous response effects in Stage 2
     
     # Simulate continuous response in Stage 2 for non-responders
     non_responders$continuous_response_stage2 <- beta_cont_stage1[1] +

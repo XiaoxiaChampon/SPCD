@@ -46,15 +46,43 @@ binary_power_data <- power_data(final_table, 1, 2)
 continuous_power_data <- power_data(final_table, 3, 4)
 continuous_power_logmap <- power_data(final_table, 5, 6)
 continuous_power_expmap <- power_data(final_table, 7, 8)
+#continuous_power_logmap
+# num_subjects diff_stage2  power power01 trt
+# experiment_output             600           0 0.0504  0.1074   A
+# experiment_output.1           900           0 0.0632  0.1154   A
+# experiment_output1            600           0 0.0532  0.1104   B
+# experiment_output.11          900           0 0.0586  0.1108   B
 
-
+# continuous_power_expmap 
+# num_subjects diff_stage2  power power01 trt
+# experiment_output             600           0 0.5864  0.6370   A
+# experiment_output.1           900           0 0.6172  0.6652   A
+# experiment_output1            600           0 0.5798  0.6300   B
+# experiment_output.11          900           0 0.6254  0.6730   B
 
 binary_power_data2 <- power_data(final_table, 9, 10)
 continuous_power_data2 <- power_data(final_table, 11, 12)
 continuous_power_logmap2 <- power_data(final_table, 13, 14)
 continuous_power_expmap2 <- power_data(final_table, 15, 16)
 
+save(binary_power_data, continuous_power_data, continuous_power_logmap, continuous_power_expmap,
+     binary_power_data2, continuous_power_data2, continuous_power_logmap2, continuous_power_expmap2,
+     file = "TypeI_error.RData")
 
+# continuous_power_logmap2 
+# num_subjects diff_stage2  power power01 trt
+# experiment_output             600           0 0.0586  0.1114   A
+# experiment_output.1           900           0 0.0570  0.1126   A
+# experiment_output1            600           0 0.0552  0.1098   B
+# experiment_output.11          900           0 0.0578  0.1150   B
+
+
+# continuous_power_expmap2
+# num_subjects diff_stage2  power power01 trt
+# experiment_output             600           0 0.6406  0.6592   A
+# experiment_output.1           900           0 0.6612  0.6788   A
+# experiment_output1            600           0 0.6258  0.6456   B
+# experiment_output.11          900           0 0.6386  0.6538   B
 ####################################################
 library(ggplot2)
 library(data.table)
