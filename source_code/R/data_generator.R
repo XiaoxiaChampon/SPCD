@@ -42,7 +42,7 @@ mapping_function_2 <- function(Y_cont) {
 
 
 
-spcd_data <- function(n, n_groups, diff_stage1, diff_stage2){
+spcd_data <- function(n, n_groups, trtA_effct, diff_stage1, diff_stage2){
   # Define parameters
   #  n <- 600  # Total number of subjects
   #  n_groups <- 3  # Two treatments and one placebo
@@ -67,9 +67,9 @@ spcd_data <- function(n, n_groups, diff_stage1, diff_stage2){
   covariates$treatment_stage1 <- rep(c(0, 1, 2), each = n_subjects_per_group)  # 0 = placebo, 1 = treatment 1, 2 = treatment 2
   
   # Define treatment effects for Stage 1 (binary and continuous responses)
-  treatment_effect_bin_stage1 <- c(0, 4, 7)  # Binary response effects
+  treatment_effect_bin_stage1 <- c(2, 3, 7)  # Binary response effects
   #treatment_effect_cont_stage1 <- c(0, 1, 1+diff_stage1)   # Continuous response effects
-  treatment_effect_cont_stage1 <- c(0, 0, 0+diff_stage1)   # Continuous response effects
+  treatment_effect_cont_stage1 <- c(2, trtA_effct, trtA_effct+diff_stage1)   # Continuous response effects
   
   
   # Simulate continuous response in Stage 1

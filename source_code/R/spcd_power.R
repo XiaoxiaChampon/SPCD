@@ -128,6 +128,7 @@ ensure_dir_exist(final_table_folder)
 #                                      diff_stage1 = 0.5){
   spcd_testing_simulation <- function (num_replicas, 
                                        num_indvs,
+                                       diff_stage1 ,
                                        diff_stage2 ,
                                        n_groups = 3,
                                        diff_stage1 = 0){
@@ -145,7 +146,7 @@ ensure_dir_exist(final_table_folder)
                            # n_groups <- 3
                            # diff_stage1 <- 0
                            # diff_stage2 <- 0
-                           example_data <- spcd_data(num_indvs, n_groups, diff_stage1, diff_stage2)
+                           example_data <- spcd_data(num_indvs, n_groups, trtA_effct, diff_stage1, diff_stage2)
                            
                            non_responders <- example_data$spcd_data
                            result <- hypothesis_testing (non_responders)
@@ -244,14 +245,19 @@ generate_ed_table <- function(subjects_vector,
 ###################
 #power
 if (options_replicas == 1000){
-  ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
-                                 diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5))
+  trtA_effct <- 3
+  diff_stage1 <- 0.75
+  ed_table1 <- generate_ed_table(subjects_vector = c(200,400, 600),
+                                 diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5)
+                                 )
 }
 
 if (options_replicas == 5000){
+  trtA_effct <- 2
+  diff_stage1 <- 0
   # ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
   #                                diff_stage2_vector = c(0))
-  ed_table1 <- generate_ed_table(subjects_vector = c(600,900),
+  ed_table1 <- generate_ed_table(subjects_vector = c(200, 400,600),
                                  diff_stage2_vector = c(0))
 }
 
