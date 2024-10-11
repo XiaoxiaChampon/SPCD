@@ -48,7 +48,7 @@ spcd_data <- function(n, n_groups, trtA_effct, diff_stage1, diff_stage2){
   #  n_groups <- 3  # Two treatments and one placebo
   # diff_stage1 <- 0.5
   # diff_stage2 <- 1.5
-  n_subjects_per_group <- n / n_groups  # Subjects per group
+  n_subjects_per_group <- n / (n_groups+1)  # Subjects per group
   p_bin <- 0.5  # Probability for binary covariates
   covar1_mean <- 10  # Mean for continuous covariate 1
   covar2_mean <- 35  # Mean for continuous covariate 2
@@ -63,11 +63,11 @@ spcd_data <- function(n, n_groups, trtA_effct, diff_stage1, diff_stage2){
     continuous_cov2 = rnorm(n, covar2_mean, covar_sd)
   )
   
-  # Assign subjects equally to two treatment arms and a placebo group in Stage 1
-  covariates$treatment_stage1 <- rep(c(0, 1, 2), each = n_subjects_per_group)  # 0 = placebo, 1 = treatment 1, 2 = treatment 2
+  # Assign subjects equally to two treatment arms and two times for a placebo group in Stage 1
+  covariates$treatment_stage1 <- c(rep(0, 2*n_subjects_per_group), rep(c(1, 2), each = n_subjects_per_group)  )# 0 = placebo, 1 = treatment 1, 2 = treatment 2
   
   # Define treatment effects for Stage 1 (binary and continuous responses)
-  treatment_effect_bin_stage1 <- c(2, 3, 7)  # Binary response effects
+  treatment_effect_bin_stage1 <- c(2, trtA_effct, trtA_effct+diff_stage1)  # Binary response effects
   #treatment_effect_cont_stage1 <- c(0, 1, 1+diff_stage1)   # Continuous response effects
   treatment_effect_cont_stage1 <- c(2, trtA_effct, trtA_effct+diff_stage1)   # Continuous response effects
   
@@ -141,12 +141,18 @@ spcd_data <- function(n, n_groups, trtA_effct, diff_stage1, diff_stage2){
     
     # Stage 2: Re-randomize non-responders to two treatments and placebo
     n_non_responders <- nrow(non_responders)
-    non_responders$treatment_stage2 <- rep(c(0, 1, 2), length.out = n_non_responders)  # Re-randomize equally # 0 = placebo, 1 = treatment 1, 2 = treatment 2
     
+    n_subjects_per_group_stage2 <- round( n_non_responders/(1+n_groups))
+    
+    non_responders$treatment_stage2 <- c(rep(0, 2*n_subjects_per_group_stage2), 
+                                         rep(1,  n_subjects_per_group_stage2),
+                                         rep(2, n_non_responders - 3*n_subjects_per_group_stage2 ))  # Re-randomize equally # 0 = placebo, 1 = treatment 1, 2 = treatment 2
+    
+
     # Define treatment effects for Stage 2
-    treatment_effect_bin_stage2 <- c(0, 6, 10)  # Binary response effects in Stage 2
+    treatment_effect_bin_stage2 <- c(1, trtA_effct, trtA_effct+diff_stage2)  # Binary response effects in Stage 2
     #treatment_effect_cont_stage2 <- c(0, 3, 3+diff_stage2)  # Continuous response effects in Stage 2
-    treatment_effect_cont_stage2 <- c(0, 0, 0+diff_stage2)  # Continuous response effects in Stage 2
+    treatment_effect_cont_stage2 <- c(1, trtA_effct, trtA_effct+diff_stage2)  # Continuous response effects in Stage 2
     
     # Simulate continuous response in Stage 2 for non-responders
     non_responders$continuous_response_stage2 <- beta_cont_stage1[1] +
@@ -209,7 +215,7 @@ spcd_data <- function(n, n_groups, trtA_effct, diff_stage1, diff_stage2){
   return(list("spcd_data" = non_responders_no, "spcd_data_yes" = non_responders_yes))
 }
 
-# example_data <- spcd_data (300, 3, 0.5, 1.5)
+# example_data <- spcd_data (200, 3, 3, 0.5, 1.5)
 # names(example_data$spcd_data)
 # 
 # names(example_data$spcd_data_yes)
