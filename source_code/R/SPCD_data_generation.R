@@ -487,3 +487,62 @@ t_test_result_2$p.value
 # Compare the pooled logistic regression model for binary response and linear model for continuous response
 
 #######################################
+#install.packages("RBesT")
+library(RBesT)
+
+# Example: setting up priors for treatment and control arms
+
+control_prior <- mixnorm(c(1, 0, 1), sigma = 1)
+treatment_prior <- mixnorm(c(1, 0, 1), sigma = 1)
+
+# Data for the control and treatment arms (e.g., success counts)
+data_control <- c(15, 100)  # 15 successes out of 100 trials
+data_treatment <- c(20, 100)  # 20 successes out of 100 trials
+
+# Posterior distributions for each arm
+posterior_control <- postmix(control_prior, data_control)
+posterior_treatment <- postmix(treatment_prior, data_treatment)
+
+# Compare the two posteriors
+summary(posterior_control)
+summary(posterior_treatment)
+
+summary(posterior_control)
+# mean         sd       2.5%      50.0%      97.5% 
+# 0.0318163  0.9997233 -1.9276054  0.0318163  1.9912380 
+# > summary(posterior_treatment)
+# mean          sd        2.5%       50.0%       97.5% 
+# 0.03747658  0.99968765 -1.92187521  0.03747658  1.99682836 
+
+
+# Load RBesT package
+library(RBesT)
+
+# Define prior distributions for the two groups (Treatment A and Treatment B)
+prior_A <- mixnorm(c(1, 0, 1), sigma = 1)   # Normal prior for Treatment A
+prior_B <- mixnorm(c(1, 0, 1), sigma = 1)   # Normal prior for Treatment B
+
+# Sample data for the two groups: (successes, trials)
+data_A <- c(18, 50)   # 18 successes out of 50 for Treatment A
+data_B <- c(12, 50)   # 12 successes out of 50 for Treatment B
+
+# Compute posteriors for both treatments
+posterior_A <- postmix(prior_A, data_A)
+posterior_B <- postmix(prior_B, data_B)
+
+# Hypothesis Test: Probability that Treatment A is better than Treatment B
+# Compare posteriors using a threshold
+diff_posterior <- postmix(prior_A, data_A) - postmix(prior_B, data_B)
+
+# Compute the probability that Treatment A is better than Treatment B
+prob_A_better <- pmix(diff_posterior, 0)
+
+# Print the probability
+print(prob_A_better)
+
+# Decision rule: if prob_A_better > 0.95, reject null hypothesis
+if (prob_A_better > 0.95) {
+  print("Reject the null hypothesis: Treatment A is better than Treatment B")
+} else {
+  print("Fail to reject the null hypothesis: No strong evidence that Treatment A is better")
+}
