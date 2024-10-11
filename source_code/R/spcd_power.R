@@ -208,7 +208,8 @@ run_experiment_hypothesis <- function(exp_idx,
                                       alpha2 = 0.1){
   
   exp_str <- paste("Track time for \nNum Subjects:\t", num_indvs,
-                   "\n diff_stage2:\t",diff_stage2)
+                   "\n diff_stage2:\t",diff_stage2,
+                   "\n noise_sd:\t",noise_sd)
   writeLines(exp_str)
   timeKeeperStart(exp_str)
   simulation_scenarios <- spcd_testing_simulation(num_replicas = num_replicas, 
@@ -286,8 +287,8 @@ if (options_replicas == 1000){
   ed_table1 <- generate_ed_table(subjects_vector = c( 200, 400, 600),
                                  diff_stage1,
                                  trtA_effect,
-                                 diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5),
-                                 noise_sd_vector = c(1, 4, 8, 16)
+                                 diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5,5,  6.5),
+                                 noise_sd_vector = c(1, 2, 4)
                                  )
 }
 
