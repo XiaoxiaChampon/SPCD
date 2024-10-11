@@ -42,7 +42,7 @@ mapping_function_2 <- function(Y_cont) {
 
 
 
-spcd_data <- function(n, n_groups, trtA_effect, diff_stage1, diff_stage2){
+spcd_data <- function(n, n_groups, trtA_effect, diff_stage1, diff_stage2, noise_sd){
   # Define parameters
   #  n <- 600  # Total number of subjects
   #  n_groups <- 3  # Two treatments and one placebo
@@ -80,7 +80,7 @@ spcd_data <- function(n, n_groups, trtA_effect, diff_stage1, diff_stage2){
     beta_cont_stage1[4] * covariates$continuous_cov1 +
     beta_cont_stage1[5] * covariates$continuous_cov2 +
     treatment_effect_cont_stage1[covariates$treatment_stage1 + 1] +  # Adding treatment effect
-    rnorm(n, 0, 1)  # Random noise
+    rnorm(n, 0, noise_sd)  # Random noise
   
   # Simulate binary response in Stage 1
   beta_bin_stage1 <- c(-1, 1, -0.5, 0.7, 1.1)  # Coefficients for binary response
@@ -98,7 +98,7 @@ spcd_data <- function(n, n_groups, trtA_effect, diff_stage1, diff_stage2){
     beta_cont_stage1[3] * covariates$binary_cov2 +
     beta_cont_stage1[4] * covariates$continuous_cov1 +
     beta_cont_stage1[5] * covariates$continuous_cov2 +
-    rnorm(n, 0, 1)  # Random noise
+    rnorm(n, 0, noise_sd)  # Random noise
   
   covariates$difference_base_stage1 <- covariates$continuous_response_stage1 - covariates$continuous_response_stage1_baseline
   
@@ -161,7 +161,7 @@ spcd_data <- function(n, n_groups, trtA_effect, diff_stage1, diff_stage2){
       beta_cont_stage1[4] * non_responders$continuous_cov1 +
       beta_cont_stage1[5] * non_responders$continuous_cov2 +
       treatment_effect_cont_stage2[non_responders$treatment_stage2 + 1] +  # Treatment effect
-      rnorm(n_non_responders, 0, 1)  # Random noise
+      rnorm(n_non_responders, 0, noise_sd)  # Random noise
     
     # Simulate binary response in Stage 2 for non-responders
     lin_pred_stage2 <- beta_bin_stage1[1]-40 +
