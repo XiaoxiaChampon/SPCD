@@ -265,7 +265,7 @@ generate_ed_table <- function(subjects_vector,
                               trtA_effect,
                               diff_stage2_vector
                               ){
-  ed_table_ret <- expand.grid(subjects_vector, diff_stage2_vector)
+  ed_table_ret <- expand.grid(subjects_vector, trtA_effect, diff_stage1, diff_stage2_vector)
   return(ed_table_ret)
 }
 
@@ -277,7 +277,7 @@ generate_ed_table <- function(subjects_vector,
 if (options_replicas == 1000){
   diff_stage1 <- 0.75
   trtA_effect <- 3
-  ed_table1 <- generate_ed_table(subjects_vector = c( 400, 600),
+  ed_table1 <- generate_ed_table(subjects_vector = c( 200, 400, 600),
                                  diff_stage1,
                                  trtA_effect,
                                  diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5)
@@ -301,7 +301,7 @@ if (options_replicas == 5000){
 ed_table <- ed_table1
 ###################
 
-colnames(ed_table) <- c("num_subjects", "diff_stage2")
+colnames(ed_table) <- c("num_subjects","trtA_effect","diff_stage1", "diff_stage2")
 
 ##########################
 all_experiment_outputs <- list()

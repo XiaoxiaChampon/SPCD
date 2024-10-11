@@ -28,6 +28,7 @@
 ###
 #load("./output_spcd_test/final_table.RData")
 power_data <- function(final_table, power_col, power01_col){
+  final_table <- final_table [,-c(2,3)]
   binary_result <- final_table[,1:2]
   binary_result <- rbind(binary_result,binary_result)
   binary_result$power <- c(0)
