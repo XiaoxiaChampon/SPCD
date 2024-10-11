@@ -27,8 +27,9 @@
 ##############################################################
 ###
 #load("./output_spcd_test/final_table.RData")
-power_data <- function(final_table, power_col, power01_col){
-  final_table <- final_table [,-c(2,3)]
+power_data <- function(final_table, power_col, power01_col, noise_sd){
+  final_table <- final_table [final_table$noise_sd==noise_sd,]
+  final_table <- final_table [,-c(2,3,5)]
   binary_result <- final_table[,1:2]
   binary_result <- rbind(binary_result,binary_result)
   binary_result$power <- c(0)
@@ -43,10 +44,15 @@ power_data <- function(final_table, power_col, power01_col){
   return(binary_result)
 }
 
-binary_power_data <- power_data(final_table, 1, 2)
-continuous_power_data <- power_data(final_table, 3, 4)
-continuous_power_logmap <- power_data(final_table, 5, 6)
-continuous_power_expmap <- power_data(final_table, 7, 8)
+binary_power_data <- power_data(final_table, 1, 2 ,1)
+continuous_power_data <- power_data(final_table, 3, 4 ,1 )
+continuous_power_logmap <- power_data(final_table, 5, 6 ,1)
+continuous_power_expmap <- power_data(final_table, 7, 8 ,1)
+
+binary_power_data2 <- power_data(final_table, 1, 2 ,2)
+continuous_power_data2 <- power_data(final_table, 3, 4 ,2 )
+continuous_power_logmap2 <- power_data(final_table, 5, 6 ,2)
+continuous_power_expmap2 <- power_data(final_table, 7, 8 ,2)
 #continuous_power_logmap
 # num_subjects diff_stage2  power power01 trt
 # experiment_output             600           0 0.0504  0.1074   A
@@ -61,10 +67,15 @@ continuous_power_expmap <- power_data(final_table, 7, 8)
 # experiment_output1            600           0 0.5798  0.6300   B
 # experiment_output.11          900           0 0.6254  0.6730   B
 
-binary_power_data2 <- power_data(final_table, 9, 10)
-continuous_power_data2 <- power_data(final_table, 11, 12)
-continuous_power_logmap2 <- power_data(final_table, 13, 14)
-continuous_power_expmap2 <- power_data(final_table, 15, 16)
+binary_power_data_map <- power_data(final_table, 9, 10 ,1)
+continuous_power_data_map <- power_data(final_table, 11, 12,1)
+continuous_power_logmap_map <- power_data(final_table, 13, 14,1)
+continuous_power_expmap_map <- power_data(final_table, 15, 16,1)
+
+binary_power_data_map2 <- power_data(final_table, 9, 10 ,2)
+continuous_power_data_map2 <- power_data(final_table, 11, 12,2)
+continuous_power_logmap_map2 <- power_data(final_table, 13, 14,2)
+continuous_power_expmap_map2 <- power_data(final_table, 15, 16,2)
 
 save(binary_power_data, continuous_power_data, continuous_power_logmap, continuous_power_expmap,
      binary_power_data2, continuous_power_data2, continuous_power_logmap2, continuous_power_expmap2,
@@ -114,12 +125,24 @@ power_fig_fun <- function (binary_power_data){
   print(power_by_time_plot_new)
 }
 
-power_fig_fun  (binary_power_data)
+par(mfrow=c(2,3))
+#power_fig_fun  (binary_power_data)
 power_fig_fun  (continuous_power_data)
 power_fig_fun  (continuous_power_logmap)
 power_fig_fun  (continuous_power_expmap)
 
-power_fig_fun  (binary_power_data2)
+#power_fig_fun  (binary_power_data2)
 power_fig_fun  (continuous_power_data2)
 power_fig_fun  (continuous_power_logmap2)
 power_fig_fun  (continuous_power_expmap2)
+
+par(mfrow=c(2,3))
+#power_fig_fun  (binary_power_data_map)
+power_fig_fun  (continuous_power_data_map)
+power_fig_fun  (continuous_power_logmap_map)
+power_fig_fun  (continuous_power_expmap_map)
+
+#power_fig_fun  (binary_power_data_map2)
+power_fig_fun  (continuous_power_data_map2)
+power_fig_fun  (continuous_power_logmap_map2)
+power_fig_fun  (continuous_power_expmap_map2)
