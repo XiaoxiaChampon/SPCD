@@ -60,7 +60,7 @@ options <- parse_args(parser)
 
 options_jobid <- 1
 options_numcpus <- 10
-options_replicas <- 1000
+options_replicas <- 5000
 # Use the options
 cat("Job Idx:", options_jobid, "\n")
 cat("Num CPUs:", options_numcpus, "\n")
@@ -115,10 +115,10 @@ ensure_dir_exist <- function(directory_path){
 # final_table_folder = paste0("output_spcd_test")
 # ensure_dir_exist(final_table_folder)
 
-scenario_folder = "spcd_test_typeI_trt"
+scenario_folder = "spcd_test_typeI_trt_typeI_real"
 ensure_dir_exist(scenario_folder)
 
-final_table_folder = paste0("output_spcd_test_typeI_trt")
+final_table_folder = paste0("output_spcd_test_typeI_trt_real")
 ensure_dir_exist(final_table_folder)
 
 
