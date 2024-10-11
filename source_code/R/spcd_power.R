@@ -60,7 +60,7 @@ options <- parse_args(parser)
 
 options_jobid <- 1
 options_numcpus <- 10
-options_replicas <- 5000
+options_replicas <- 1000
 # Use the options
 cat("Job Idx:", options_jobid, "\n")
 cat("Num CPUs:", options_numcpus, "\n")
@@ -129,7 +129,7 @@ ensure_dir_exist(final_table_folder)
 #                                      diff_stage1 = 0.5){
   spcd_testing_simulation <- function (num_replicas, 
                                        num_indvs,
-                                       trtA_effct,
+                                       trtA_effect,
                                        diff_stage1 ,
                                        diff_stage2 ,
                                        n_groups = 3){
@@ -143,25 +143,40 @@ ensure_dir_exist(final_table_folder)
                                                  
                            #######################################################################
                            #spcd_data_test <- spcd_data(n, n_groups, diff_stage1, diff_stage2)
-                           # num_indvs <- 900
+                           # num_indvs <- 400
                            # n_groups <- 3
                            # diff_stage1 <- 0
                            # diff_stage2 <- 0
-                           example_data <- spcd_data(num_indvs, n_groups, trtA_effct, diff_stage1, diff_stage2)
+                           # trtA_effect <- 2
+                           example_data <- spcd_data(num_indvs, n_groups, trtA_effect, diff_stage1, diff_stage2)
                            
                            non_responders <- example_data$spcd_data
-                           result <- hypothesis_testing (non_responders, trtA_effct,  diff_stage2)
+                           result <- hypothesis_testing (non_responders, trtA_effect,  diff_stage2)
                            
                            non_responders2 <- example_data$spcd_data_yes
-                           result2 <- hypothesis_testing (non_responders2, trtA_effct,  diff_stage2)
+                           result2 <- hypothesis_testing (non_responders2, trtA_effect,  diff_stage2)
                            
                            # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
                            #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2))
                            
+                           # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
+                           #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2,
+                           #             "binary_result2"=result2$binary_result,"continuous_result2"=result2$continuous_result,
+                           #             "continous_map12"=result2$continous_map1,"continous_map22"=result2$continous_map2,
+                           #             "continuous_result_bayesian"=result$continuous_result_bayesian,
+                           #             "continuous_result_bayesian_log"=result$continuous_result_bayesian_log,
+                           #             "continuous_result_bayesian_exp"=result$continuous_result_bayesian_exp,
+                           #             "continuous_result_bayesian2"=result2$continuous_result_bayesian,
+                           #             "continuous_result_bayesian_log2"=result2$continuous_result_bayesian_log,
+                           #             "continuous_result_bayesian_exp2"=result2$continuous_result_bayesian_exp
+                           #             ))
+                           
                            return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
                                        "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2,
                                        "binary_result2"=result2$binary_result,"continuous_result2"=result2$continuous_result,
-                                       "continous_map12"=result2$continous_map1,"continous_map22"=result2$continous_map2))
+                                       "continous_map12"=result2$continous_map1,"continous_map22"=result2$continous_map2
+                                      
+                           ))
                          } 
   #T_rep <- do.call(rbind, T_rep)
   return(result_all)
@@ -169,9 +184,12 @@ ensure_dir_exist(final_table_folder)
 }
 
 #set.seed(123456 + 10 * options_jobid)
-# set.seed(123456 + 10 * 2)
- # result_all <- spcd_testing_simulation  (num_replicas = 6,num_indvs= 300,diff_stage2 = 1.5,n_groups = 3,
- #                                         diff_stage1 = 0.5)
+ # set.seed(123456 + 10 * 2)
+ #  result_all <- spcd_testing_simulation  (num_replicas = 6,num_indvs= 400, trtA_effect = 2,  diff_stage1 = 0,
+ #   diff_stage2 = 0)
+ #  
+ #  result_all <- spcd_testing_simulation  (num_replicas = 6,num_indvs= 400, trtA_effect = 3,  diff_stage1 = 0.75,
+ #                                          diff_stage2 = 1.5)
 # simulation_pvalues <- matrix(unlist(result_all), nrow=8)
 # power <- apply(simulation_pvalues, 1, function(x){sum(x<=0.05)/length(simulation_pvalues[1,])})
 # power01 <- apply(simulation_pvalues, 1, function(x){sum(x<=0.1)/length(simulation_pvalues[1,])})
@@ -180,7 +198,9 @@ ensure_dir_exist(final_table_folder)
 source("./source_code/R/time_track_function.R")
 run_experiment_hypothesis <- function(exp_idx,
                                       num_indvs,
-                                      diff_stage2,
+                                      trtA_effect,
+                                      diff_stage1,
+                                      diff_stage2 ,
                                       num_replicas = options_replicas,
                                       alpha = 0.05,
                                       alpha2 = 0.1){
@@ -189,8 +209,10 @@ run_experiment_hypothesis <- function(exp_idx,
                    "\n diff_stage2:\t",diff_stage2)
   writeLines(exp_str)
   timeKeeperStart(exp_str)
-  simulation_scenarios <- spcd_testing_simulation(num_replicas=num_replicas, 
-                                                 num_indvs=num_indvs, 
+  simulation_scenarios <- spcd_testing_simulation(num_replicas = num_replicas, 
+                                                 num_indvs = num_indvs, 
+                                                 trtA_effect = trtA_effect,
+                                                 diff_stage1 = diff_stage1,
                                                  diff_stage2 =  diff_stage2
                                                 )
   
@@ -218,13 +240,17 @@ run_experiment_hypothesis <- function(exp_idx,
 # 
 # run_experiment_hypothesis <- function(exp_idx,
 #                                       num_indvs,
-#                                       diff_stage2,
+#                                       trtA_effect,
+#                                       diff_stage1,
+#                                       diff_stage2 ,
 #                                       num_replicas = options_replicas,
 #                                       alpha = 0.05,
 #                                       alpha2 = 0.1)
 # run_experiment_hypothesis (1,
-#                                       300,
-#                                       1.5,
+#                                       400,
+#                            3,
+#                                       0.75,
+#                            1.5,
 #                                       num_replicas = 5,
 #                                       alpha = 0.05,
 #                                       alpha2 = 0.1)
@@ -235,6 +261,8 @@ begin_exp_time <- Sys.time()
 
 set.seed(123456 + 6 * options_jobid)
 generate_ed_table <- function(subjects_vector,
+                              diff_stage1,
+                              trtA_effect,
                               diff_stage2_vector
                               ){
   ed_table_ret <- expand.grid(subjects_vector, diff_stage2_vector)
@@ -245,20 +273,25 @@ generate_ed_table <- function(subjects_vector,
 
 ###################
 #power
+
 if (options_replicas == 1000){
-  trtA_effct <- 3
   diff_stage1 <- 0.75
-  ed_table1 <- generate_ed_table(subjects_vector = c(200,400, 600),
+  trtA_effect <- 3
+  ed_table1 <- generate_ed_table(subjects_vector = c( 400, 600),
+                                 diff_stage1,
+                                 trtA_effect,
                                  diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5)
                                  )
 }
 
 if (options_replicas == 5000){
-  trtA_effct <- 2
   diff_stage1 <- 0
+  trtA_effect <- 2
   # ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
   #                                diff_stage2_vector = c(0))
   ed_table1 <- generate_ed_table(subjects_vector = c(200, 400,600),
+                                 diff_stage1,
+                                 trtA_effect,
                                  diff_stage2_vector = c(0))
 }
 
@@ -274,10 +307,14 @@ colnames(ed_table) <- c("num_subjects", "diff_stage2")
 all_experiment_outputs <- list()
 for (row_index in 1:dim(ed_table)[1]){
   num_indvs <- ed_table[row_index,]$num_subjects
+  trtA_effect <- ed_table[row_index,]$trtA_effect
   diff_stage2 <- ed_table[row_index,]$diff_stage2
+  diff_stage1 <- ed_table[row_index,]$diff_stage1
 
   experiment_output <- run_experiment_hypothesis( row_index,
                                                   num_indvs , 
+                                                  trtA_effect,
+                                                  diff_stage1,
                                                   diff_stage2)
   save(experiment_output, file = paste0("./", scenario_folder, "/",
                                        
