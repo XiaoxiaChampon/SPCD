@@ -215,7 +215,20 @@ spcd_data <- function(n, n_groups, trtA_effct, diff_stage1, diff_stage2){
   return(list("spcd_data" = non_responders_no, "spcd_data_yes" = non_responders_yes))
 }
 
-# example_data <- spcd_data (200, 3, 3, 0.5, 1.5)
-# names(example_data$spcd_data)
+# example_data <- spcd_data (200, 3, 3, 0.5, 1.5) #100, 50, 50
+# names(example_data$spcd_data) #43 0-22, 1-11, 10 
 # 
-# names(example_data$spcd_data_yes)
+# names(example_data$spcd_data_yes) #79 40, 20, 19
+
+# example_data <- spcd_data (400, 3, 3, 0.5, 1.5) #200, 100, 100
+# dim(example_data$spcd_data) #96
+# table(example_data$spcd_data$treatment_stage2) #48, 24 ,24
+# dim(example_data$spcd_data_yes) #107
+# table(example_data$spcd_data_yes$treatment_stage2) #54, 27, 26
+
+
+# example_data <- spcd_data (600, 3, 3, 0.5, 1.5) #300, 150, 150
+# dim(example_data$spcd_data) #116
+# table(example_data$spcd_data$treatment_stage2) #58, 29 ,29
+# dim(example_data$spcd_data_yes) #215
+# table(example_data$spcd_data_yes$treatment_stage2) #108, 54, 53

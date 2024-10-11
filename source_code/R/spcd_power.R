@@ -28,6 +28,7 @@
 
 library(parallel)
 library(stats)
+library(RBesT)
 
 #library(pracma)
 
@@ -114,10 +115,10 @@ ensure_dir_exist <- function(directory_path){
 # final_table_folder = paste0("output_spcd_test")
 # ensure_dir_exist(final_table_folder)
 
-scenario_folder = "spcd_test_typeI"
+scenario_folder = "spcd_test_typeI_trt"
 ensure_dir_exist(scenario_folder)
 
-final_table_folder = paste0("output_spcd_test_typeI")
+final_table_folder = paste0("output_spcd_test_typeI_trt")
 ensure_dir_exist(final_table_folder)
 
 
@@ -128,14 +129,14 @@ ensure_dir_exist(final_table_folder)
 #                                      diff_stage1 = 0.5){
   spcd_testing_simulation <- function (num_replicas, 
                                        num_indvs,
+                                       trtA_effct,
                                        diff_stage1 ,
                                        diff_stage2 ,
-                                       n_groups = 3,
-                                       diff_stage1 = 0){
+                                       n_groups = 3){
   cat("CFD Testing Simulation \nNum Replicas:\t", num_replicas)
   #num_replicas=2
   result_all <- foreach (number_simulation = 1:num_replicas, .combine = cbind, .init = NULL,
-                         .packages=c("MASS")) %dorng% {
+                         .packages=c("RBesT", "stats")) %dorng% {
                            
                            source("./source_code/R/data_generator.R")
                            source("./source_code/R/spcd_testing.R")
