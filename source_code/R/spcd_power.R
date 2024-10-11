@@ -150,10 +150,10 @@ ensure_dir_exist(final_table_folder)
                            example_data <- spcd_data(num_indvs, n_groups, trtA_effct, diff_stage1, diff_stage2)
                            
                            non_responders <- example_data$spcd_data
-                           result <- hypothesis_testing (non_responders)
+                           result <- hypothesis_testing (non_responders, trtA_effct,  diff_stage2)
                            
                            non_responders2 <- example_data$spcd_data_yes
-                           result2 <- hypothesis_testing (non_responders2)
+                           result2 <- hypothesis_testing (non_responders2, trtA_effct,  diff_stage2)
                            
                            # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
                            #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2))

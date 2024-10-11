@@ -518,6 +518,7 @@ summary(posterior_control)
 # Load RBesT package
 library(RBesT)
 
+#binary
 # Define prior distributions for the two groups (Treatment A and Treatment B)
 prior_A <- mixnorm(c(1, 0, 1), sigma = 1)   # Normal prior for Treatment A
 prior_B <- mixnorm(c(1, 0, 1), sigma = 1)   # Normal prior for Treatment B
@@ -546,3 +547,28 @@ if (prob_A_better > 0.95) {
 } else {
   print("Fail to reject the null hypothesis: No strong evidence that Treatment A is better")
 }
+
+#continuous
+# Set up priors for the two groups
+# Using normal priors with mean and standard deviation
+# Assume data for group 1 and group 2 are normally distributed
+
+prior1 <- mixnorm(c(1, 0, 1), sigma = 1)
+prior2 <- mixnorm(c(1, 0, 1), sigma = 1)
+
+# Define the data from two groups (assuming we have two vectors of continuous responses)
+group1 <- c(4.2, 5.1, 6.3, 5.9, 6.1)
+group2 <- c(3.5, 4.0, 4.8, 5.0, 5.3)
+
+# Perform the Bayesian analysis for group 1 and group 2 using the defined priors
+post1 <- postmix(prior1, m = mean(group1), se = sd(group1)/sqrt(length(group1)))
+post2 <- postmix(prior2, m = mean(group2), se = sd(group2)/sqrt(length(group2)))
+
+# Hypothesis testing: Compare the posterior distributions of the two groups
+# Compute the probability that group 1 mean > group 2 mean
+prob_diff <- 1 - pmixdiff(post1, post2, 0)
+
+# Output the result
+print(paste("Probability that Group 1 has a higher mean than Group 2:", round(prob_diff, 4)))
+
+
