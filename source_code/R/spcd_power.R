@@ -60,7 +60,7 @@ options <- parse_args(parser)
 
 options_jobid <- 1
 options_numcpus <- 10
-options_replicas <- 5000
+options_replicas <- 1000
 # Use the options
 cat("Job Idx:", options_jobid, "\n")
 cat("Num CPUs:", options_numcpus, "\n")
@@ -115,10 +115,10 @@ ensure_dir_exist <- function(directory_path){
 # final_table_folder = paste0("output_spcd_test")
 # ensure_dir_exist(final_table_folder)
 
-scenario_folder = "spcd_test_typeI_trt_typeI_real"
+scenario_folder = "spcd_test_typeI_trt_bayesian_power"
 ensure_dir_exist(scenario_folder)
 
-final_table_folder = paste0("output_spcd_test_typeI_trt_real")
+final_table_folder = paste0("output_spcd_test_typeI_bayesian_power")
 ensure_dir_exist(final_table_folder)
 
 
@@ -139,16 +139,16 @@ ensure_dir_exist(final_table_folder)
   result_all <- foreach (number_simulation = 1:num_replicas, .combine = cbind, .init = NULL,
                          .packages=c("RBesT", "stats")) %dorng% {
                            
-                           source("./source_code/R/data_generator.R")
-                           source("./source_code/R/spcd_testing.R")
-                                                 
+                           # source("./source_code/R/data_generator.R")
+                           # source("./source_code/R/spcd_testing.R")
+                           #                       
                            #######################################################################
                            #spcd_data_test <- spcd_data(n, n_groups, diff_stage1, diff_stage2)
-                           # num_indvs <- 400
-                           # n_groups <- 3
-                           # diff_stage1 <- 0
-                           # diff_stage2 <- 0
-                           # trtA_effect <- 2
+                           num_indvs <- 400
+                           n_groups <- 3
+                           diff_stage1 <- 0
+                           diff_stage2 <- 0
+                           trtA_effect <- 2
                            example_data <- spcd_data(num_indvs, n_groups, trtA_effect, diff_stage1, diff_stage2, noise_sd)
                            
                            non_responders <- example_data$spcd_data
@@ -160,24 +160,34 @@ ensure_dir_exist(final_table_folder)
                            # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
                            #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2))
                            
+                           return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
+                                       "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2,
+                                       "binary_result2"=result2$binary_result,"continuous_result2"=result2$continuous_result,
+                                       "continous_map12"=result2$continous_map1,"continous_map22"=result2$continous_map2,
+                                       "continuous_result_bayesian"=result$continuous_result_bayesian,
+                                       "continuous_result_bayesian_log"=result$continuous_result_bayesian_log,
+                                       "continuous_result_bayesian_exp"=result$continuous_result_bayesian_exp,
+                                       "continuous_result_bayesian2"=result2$continuous_result_bayesian,
+                                       "continuous_result_bayesian_log2"=result2$continuous_result_bayesian_log,
+                                       "continuous_result_bayesian_exp2"=result2$continuous_result_bayesian_exp
+                                       ))
+
+                           # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
+                           #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2,
+                           #             "binary_result2"=result2$binary_result,"continuous_result2"=result2$continuous_result,
+                           #             "continous_map12"=result2$continous_map1,"continous_map22"=result2$continous_map2
+                           #            
+                           # ))
+                           
                            # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
                            #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2,
                            #             "binary_result2"=result2$binary_result,"continuous_result2"=result2$continuous_result,
                            #             "continous_map12"=result2$continous_map1,"continous_map22"=result2$continous_map2,
                            #             "continuous_result_bayesian"=result$continuous_result_bayesian,
                            #             "continuous_result_bayesian_log"=result$continuous_result_bayesian_log,
-                           #             "continuous_result_bayesian_exp"=result$continuous_result_bayesian_exp,
                            #             "continuous_result_bayesian2"=result2$continuous_result_bayesian,
-                           #             "continuous_result_bayesian_log2"=result2$continuous_result_bayesian_log,
-                           #             "continuous_result_bayesian_exp2"=result2$continuous_result_bayesian_exp
+                           #             "continuous_result_bayesian_log2"=result2$continuous_result_bayesian_log
                            #             ))
-                           
-                           return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
-                                       "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2,
-                                       "binary_result2"=result2$binary_result,"continuous_result2"=result2$continuous_result,
-                                       "continous_map12"=result2$continous_map1,"continous_map22"=result2$continous_map2
-                                      
-                           ))
                          } 
   #T_rep <- do.call(rbind, T_rep)
   return(result_all)
@@ -221,7 +231,8 @@ run_experiment_hypothesis <- function(exp_idx,
                                                 )
   
   #simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=8)
-  simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=16)
+  #simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=16)
+  simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=28)
   save(simulation_pvalues, file = paste0("./", scenario_folder, "/",
                                          
                                        

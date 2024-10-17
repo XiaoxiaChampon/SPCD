@@ -113,30 +113,32 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   # Set up priors for the two groups
   # Using normal priors with mean and standard deviation
   # Assume data for group 1 and group 2 are normally distributed
-  # prior_placebo <- mixnorm(c(1, 0, 1), sigma = 1)   # Normal prior for Treatment A
+  prior_placebo <- mixnorm(c(1, 0, 1), sigma = 1)   # Normal prior for Treatment A
   # prior_A <- mixnorm(c(trtA_effect, 0, trtA_effect), sigma = 1)   # Normal prior for Treatment A
   # prior_B <- mixnorm(c(trtA_effect+diff_stage2, 0, trtA_effect+diff_stage2), sigma = 1)   # Normal prior for Treatment B
-  # 
-  # 
-  # # Define the data from two groups (assuming we have two vectors of continuous responses)
-  # #group_0,group_1, group_2
-  # 
-  # # Perform the Bayesian analysis for group 1 and group 2 using the defined priors
-  # post_placebo <- postmix(prior_placebo, m = mean( group_0), se = sd( group_0)/sqrt(length( group_0)))
-  # post_trtA <- postmix(prior_A, m = mean( group_1), se = sd( group_1)/sqrt(length( group_1)))
-  # post_trtB <- postmix(prior_B, m = mean( group_2), se = sd( group_2)/sqrt(length( group_2)))
-  # 
-  # # Hypothesis testing: Compare the posterior distributions of the two groups
-  # # Compute the probability that group 1 mean > group 2 mean
-  # # prob_diff_A <- 1 - pmixdiff(post_placebo, post_trtA, 0)
-  # # prob_diff_B <- 1 - pmixdiff(post_placebo, post_trtB, 0)
-  # # # Output the result
-  # # print(paste("Probability that Group 1 has a higher mean than Group 2:", round(prob_diff, 4)))
-  # 
-  # prob_diff_A <-  pmixdiff(post_placebo, post_trtA, 0)
-  # prob_diff_B <-  pmixdiff(post_placebo, post_trtB, 0)
-  # 
-  # continuous_result_bayesian <- c(prob_diff_A, prob_diff_B)
+  prior_A <- mixnorm(c(1, 0, 1), sigma = 1)   # Normal prior for Treatment A
+  prior_B <- mixnorm(c(1, 0, 1), sigma = 1)   # Normal prior for Treatment B
+  
+
+  # Define the data from two groups (assuming we have two vectors of continuous responses)
+  #group_0,group_1, group_2
+
+  # Perform the Bayesian analysis for group 1 and group 2 using the defined priors
+  post_placebo <- postmix(prior_placebo, m = mean( group_0), se = sd( group_0)/sqrt(length( group_0)))
+  post_trtA <- postmix(prior_A, m = mean( group_1), se = sd( group_1)/sqrt(length( group_1)))
+  post_trtB <- postmix(prior_B, m = mean( group_2), se = sd( group_2)/sqrt(length( group_2)))
+
+  # Hypothesis testing: Compare the posterior distributions of the two groups
+  # Compute the probability that group 1 mean > group 2 mean
+  # prob_diff_A <- 1 - pmixdiff(post_placebo, post_trtA, 0)
+  # prob_diff_B <- 1 - pmixdiff(post_placebo, post_trtB, 0)
+  # # Output the result
+  # print(paste("Probability that Group 1 has a higher mean than Group 2:", round(prob_diff, 4)))
+
+  prob_diff_A <-  pmixdiff(post_placebo, post_trtA, 0)
+  prob_diff_B <-  pmixdiff(post_placebo, post_trtB, 0)
+
+  continuous_result_bayesian <- c(prob_diff_A, prob_diff_B)
   # 
   ####################################################################
   
@@ -158,27 +160,31 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   continous_map1 <- c (t_test_result_21$p.value, t_test_result_22$p.value)
   
   ##################add bayesian log
-  # sd_log <- ifelse(mapping_function(1)<0,1,mapping_function(1))
+  sd_log <- ifelse(mapping_function(1)<0,1,mapping_function(1))
   # prior_placebo_log <- mixnorm(mapping_function(c(1,0,1)), sigma = sd_log)   # Normal prior for Treatment A
   # prior_A_log <- mixnorm(mapping_function(c(trtA_effect, 0, trtA_effect)), sigma = sd_log)   # Normal prior for Treatment A
   # prior_B_log <- mixnorm(mapping_function(c(trtA_effect+diff_stage2, 0, trtA_effect+diff_stage2)), sigma = sd_log)   # Normal prior for Treatment B
-  # 
-  # 
-  # # Define the data from two groups (assuming we have two vectors of continuous responses)
-  # #group_0,group_1, group_2
-  # 
-  # # Perform the Bayesian analysis for group 1 and group 2 using the defined priors
-  # post_placebo_log <- postmix(prior_placebo_log, m = mean( mapping_function(group_0)), 
-  #                             se = sd( mapping_function(group_0))/sqrt(length( group_0)))
-  # post_trtA_log <- postmix(prior_A_log, m = mean( mapping_function(group_1)), 
-  #                          se = sd( mapping_function(group_1))/sqrt(length( group_1)))
-  # post_trtB_log <- postmix(prior_B_log, m = mean( mapping_function(group_2)), 
-  #                          se = sd( mapping_function(group_2))/sqrt(length( group_2)))
-  # 
-  # prob_diff_A_log <-  pmixdiff(post_placebo_log, post_trtA_log, 0)
-  # prob_diff_B_log <-  pmixdiff(post_placebo_log, post_trtB_log, 0)
-  # 
-  # continuous_result_bayesian_log <- c(prob_diff_A_log, prob_diff_B_log)
+
+  prior_placebo_log <- mixnorm(c(1,0,1), sigma = 1)   # Normal prior for Treatment A
+  prior_A_log <- mixnorm(c(1,0,1), sigma = 1)   # Normal prior for Treatment A
+  prior_B_log <- mixnorm(c(1,0,1), sigma = 1)   # Normal prior for Treatment B
+  
+
+  # Define the data from two groups (assuming we have two vectors of continuous responses)
+  #group_0,group_1, group_2
+
+  # Perform the Bayesian analysis for group 1 and group 2 using the defined priors
+  post_placebo_log <- postmix(prior_placebo_log, m = mean( mapping_function(group_0)),
+                              se = sd( mapping_function(group_0))/sqrt(length( group_0)))
+  post_trtA_log <- postmix(prior_A_log, m = mean( mapping_function(group_1)),
+                           se = sd( mapping_function(group_1))/sqrt(length( group_1)))
+  post_trtB_log <- postmix(prior_B_log, m = mean( mapping_function(group_2)),
+                           se = sd( mapping_function(group_2))/sqrt(length( group_2)))
+
+  prob_diff_A_log <-  pmixdiff(post_placebo_log, post_trtA_log, 0)
+  prob_diff_B_log <-  pmixdiff(post_placebo_log, post_trtB_log, 0)
+
+  continuous_result_bayesian_log <- c(prob_diff_A_log, prob_diff_B_log)
   ####################################################
   
   
@@ -201,33 +207,41 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   # prior_placebo_exp <- mixnorm(mapping_function_2(c(1,0,1)), sigma = sd_exp)   # Normal prior for Treatment A
   # prior_A_exp <- mixnorm(mapping_function_2(c(trtA_effect, 0, trtA_effect)), sigma =sd_exp)   # Normal prior for Treatment A
   # prior_B_exp <- mixnorm(mapping_function_2(c(trtA_effect+diff_stage2, 0, trtA_effect+diff_stage2)), sigma = sd_exp)   # Normal prior for Treatment B
-  # 
-  # 
-  # # Define the data from two groups (assuming we have two vectors of continuous responses)
-  # #group_0,group_1, group_2
-  # 
-  # # Perform the Bayesian analysis for group 1 and group 2 using the defined priors
-  # post_placebo_exp <- postmix(prior_placebo_exp, m = mean( mapping_function_2(group_0)), 
-  #                             se = sd( mapping_function_2(group_0))/sqrt(length( group_0)))
-  # post_trtA_exp <- postmix(prior_A_exp, m = mean( mapping_function_2(group_1)), 
-  #                          se = sd( mapping_function_2(group_1))/sqrt(length( group_1)))
-  # post_trtB_exp <- postmix(prior_B_exp, m = mean( mapping_function_2(group_2)), 
-  #                          se = sd( mapping_function_2(group_2))/sqrt(length( group_2)))
-  # 
-  # prob_diff_A_exp <-  pmixdiff(post_placebo_exp, post_trtA_exp, 0)
-  # prob_diff_B_exp <-  pmixdiff(post_placebo_exp, post_trtB_exp, 0)
-  # 
-  # continuous_result_bayesian_exp <- c(prob_diff_A_exp, prob_diff_B_exp)
+
+  prior_placebo_exp <- mixnorm(c(1,0,1), sigma = 1)   # Normal prior for Treatment A
+  prior_A_exp <- mixnorm(c(1,0,1), sigma =1)   # Normal prior for Treatment A
+  prior_B_exp <- mixnorm(c(1,0,1), sigma = 1)   # Normal prior for Treatment B
+  
+  # Define the data from two groups (assuming we have two vectors of continuous responses)
+  #group_0,group_1, group_2
+
+  # Perform the Bayesian analysis for group 1 and group 2 using the defined priors
+  post_placebo_exp <- postmix(prior_placebo_exp, m = mean( mapping_function_2(group_0)),
+                              se = sd( mapping_function_2(group_0))/sqrt(length( group_0)))
+  post_trtA_exp <- postmix(prior_A_exp, m = mean( mapping_function_2(group_1)),
+                           se = sd( mapping_function_2(group_1))/sqrt(length( group_1)))
+  post_trtB_exp <- postmix(prior_B_exp, m = mean( mapping_function_2(group_2)),
+                           se = sd( mapping_function_2(group_2))/sqrt(length( group_2)))
+
+  prob_diff_A_exp <-  pmixdiff(post_placebo_exp, post_trtA_exp, 0)
+  prob_diff_B_exp <-  pmixdiff(post_placebo_exp, post_trtB_exp, 0)
+
+  continuous_result_bayesian_exp <- c(prob_diff_A_exp, prob_diff_B_exp)
   #######################################################################
   
+  return(list("binary_result" = binary_result, "continuous_result" = continuous_result,
+              "continous_map1" = continous_map1 , "continous_map2" = continous_map2,
+              "continuous_result_bayesian" = continuous_result_bayesian,
+              "continuous_result_bayesian_log" = continuous_result_bayesian_log,
+              "continuous_result_bayesian_exp" = continuous_result_bayesian_exp))
+  
   # return(list("binary_result" = binary_result, "continuous_result" = continuous_result, 
+  #             "continous_map1" = continous_map1 , "continous_map2" = continous_map2))
+  # 
+  
+  # return(list("binary_result" = binary_result, "continuous_result" = continuous_result,
   #             "continous_map1" = continous_map1 , "continous_map2" = continous_map2,
   #             "continuous_result_bayesian" = continuous_result_bayesian,
-  #             "continuous_result_bayesian_log" = continuous_result_bayesian_log,
-  #             "continuous_result_bayesian_exp" = continuous_result_bayesian_exp))
-  
-  return(list("binary_result" = binary_result, "continuous_result" = continuous_result, 
-              "continous_map1" = continous_map1 , "continous_map2" = continous_map2))
-  
+  #             "continuous_result_bayesian_log" = continuous_result_bayesian_log))
 }
 
