@@ -134,21 +134,21 @@ ensure_dir_exist(final_table_folder)
                                        diff_stage2 ,
                                        noise_sd,
                                        n_groups = 3){
-  cat("CFD Testing Simulation \nNum Replicas:\t", num_replicas)
+  cat("SPCD Hypothesis Testing Simulation \nNum Replicas:\t", num_replicas)
   #num_replicas=2
   result_all <- foreach (number_simulation = 1:num_replicas, .combine = cbind, .init = NULL,
                          .packages=c("RBesT", "stats")) %dorng% {
                            
-                           # source("./source_code/R/data_generator.R")
-                           # source("./source_code/R/spcd_testing.R")
+                           source("./source_code/R/data_generator.R")
+                           source("./source_code/R/spcd_testing.R")
                            #                       
                            #######################################################################
                            #spcd_data_test <- spcd_data(n, n_groups, diff_stage1, diff_stage2)
-                           num_indvs <- 400
-                           n_groups <- 3
-                           diff_stage1 <- 0
-                           diff_stage2 <- 0
-                           trtA_effect <- 2
+                           # num_indvs <- 400
+                           # n_groups <- 3
+                           # diff_stage1 <- 0
+                           # diff_stage2 <- 0
+                           # trtA_effect <- 2
                            example_data <- spcd_data(num_indvs, n_groups, trtA_effect, diff_stage1, diff_stage2, noise_sd)
                            
                            non_responders <- example_data$spcd_data
@@ -218,6 +218,7 @@ run_experiment_hypothesis <- function(exp_idx,
                                       alpha2 = 0.1){
   
   exp_str <- paste("Track time for \nNum Subjects:\t", num_indvs,
+                   "\n trtA_effect:\t",trtA_effect,
                    "\n diff_stage2:\t",diff_stage2,
                    "\n noise_sd:\t",noise_sd)
   writeLines(exp_str)
@@ -232,6 +233,8 @@ run_experiment_hypothesis <- function(exp_idx,
   
   #simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=8)
   #simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=16)
+  #binary 2 (A and B), continuous 2, log 2, exp 2, bayesian 2, bayesian log 2, bayesian exp 2  7*2=14 elements, 14*2=28 map
+  
   simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=28)
   save(simulation_pvalues, file = paste0("./", scenario_folder, "/",
                                          
@@ -279,11 +282,11 @@ set.seed(123456 + 10 * options_jobid)
 #set.seed(123456 + 6 * options_jobid)
 generate_ed_table <- function(subjects_vector,
                               diff_stage1,
-                              trtA_effect,
+                              trtA_effect_vector,
                               diff_stage2_vector,
                               noise_sd_vector
                               ){
-  ed_table_ret <- expand.grid(subjects_vector, trtA_effect, diff_stage1, diff_stage2_vector, noise_sd_vector)
+  ed_table_ret <- expand.grid(subjects_vector, trtA_effect_vector, diff_stage1, diff_stage2_vector, noise_sd_vector)
   return(ed_table_ret)
 }
 
@@ -293,24 +296,29 @@ generate_ed_table <- function(subjects_vector,
 #power
 
 if (options_replicas == 1000){
-  diff_stage1 <- 0.75
-  trtA_effect <- 3
+  #diff_stage1 <- 0.75
+  diff_stage1 <- 0.5
+  #trtA_effect <- 3
   ed_table1 <- generate_ed_table(subjects_vector = c( 200, 400, 600),
                                  diff_stage1,
-                                 trtA_effect,
+                                 # trtA_effect_vector = c(3, 3.5, 4, 4.5, 5, 5.5),
+                                 # diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5,  6.5),
+                                 trtA_effect_vector = c(3, 3.5, 4, 4.5, 5, 5.5),
                                  diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5,  6.5),
-                                 noise_sd_vector = c(1, 2)
+                                 #noise_sd_vector = c(1, 2)
+                                 noise_sd_vector = c(1)
                                  )
 }
 
 if (options_replicas == 5000){
   diff_stage1 <- 0
-  trtA_effect <- 2
+  #trtA_effect <- 2
   # ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
   #                                diff_stage2_vector = c(0))
   ed_table1 <- generate_ed_table(subjects_vector = c(200, 400,600),
                                  diff_stage1,
-                                 trtA_effect,
+                                 #trtA_effect,
+                                 trtA_effect_vector = c (2), 
                                  diff_stage2_vector = c(0),
                                  noise_sd_vector = c(1, 4, 8, 16))
 }
