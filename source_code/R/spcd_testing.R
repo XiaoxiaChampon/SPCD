@@ -31,36 +31,47 @@
 # [7] "binary_response_stage1"            "treatment_stage2"                  "continuous_response_stage2"       
 # [10] "binary_response_stage2"            "mapped_continuous_response_stage2"
 
+
+Z_function <- function (diff_stage1_trt, diff_stage2_trt, w_weight = 0.5) {
+  Z_value <- (w_weight * mean (diff_stage1_trt) + (1 - w_weight) * mean(diff_stage2_trt))/sqrt (w_weight^2 * (sd(diff_stage1_trt)/sqrt(length(diff_stage1_trt)))^2 +
+                                                                                                  2 * w_weight * (1 - w_weight) *cov(diff_stage1_trt, diff_stage2_trt)+
+                                                                                                  (1 - w_weight)^2*(sd(diff_stage2_trt)/sqrt(length(diff_stage2_trt)))^2
+                                                                                          )
+  return(Z_value)
+}
+
+
+
 hypothesis_testing <- function(non_responders, trtA_effect,  diff_stage2 ){
   # Perform logistic regression on pooled data
   
   # Set "0" as the reference level
   non_responders$treatment_stage2 <- relevel(as.factor(non_responders$treatment_stage2), ref = "0")
-  pooled_binary_model <- glm(binary_response_stage2 ~ binary_cov1 + binary_cov2 + continuous_cov1 + continuous_cov2 + treatment_stage2, 
+  pooled_binary_model <- glm(binary_response_stage2 ~ binary_cov1 + binary_cov2 + continuous_cov1 + continuous_cov2 + treatment_stage2,
                              family = binomial(link = "logit"), data = non_responders)
-  
+
   predicted_prob <- predict(pooled_binary_model, type = "response")
-  
+
   index_0 <- which(non_responders$treatment_stage2=="0")
   index_1 <- which(non_responders$treatment_stage2=="1")
   index_2 <- which(non_responders$treatment_stage2=="2")
-  
-  
+  # 
+  # 
   successes_1 <- c(sum(predicted_prob[index_0]), sum(predicted_prob[index_1]))
   # Total number of trials in each group
   totals_1 <- c(length(index_0), length(index_1))
   test_result_1 <- prop.test(successes_1, totals_1)
   # Perform the two-proportion z-test
-  #test_result_1$p.value 
-  
-  
+  #test_result_1$p.value
+
+
   successes_2 <- c(sum(predicted_prob[index_0]), sum(predicted_prob[index_2]))
   # Total number of trials in each group
   totals_2 <- c(length(index_0), length(index_2))
   test_result_2 <- prop.test(successes_2, totals_2)
   # Perform the two-proportion z-test
-  #test_result_2$p.value 
-  
+  #test_result_2$p.value
+
   binary_result <- c(test_result_1$p.value , test_result_2$p.value)
   
   #################bayesian binary
@@ -100,13 +111,19 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   group_1 <- cont_model$fitted.values[index_1]
   group_2 <- cont_model$fitted.values[index_2]
   # Perform the two-sample t-test
-  t_test_result_1 <- t.test(group_0, group_1)
+  #t_test_result_1 <- t.test(group_0, group_1)
+  #Z_function <- function (diff_stage1_trt, diff_stage2_trt, w_weight = 0.5)
+  t_test_result_1 <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                                              group_1 - group_0))
   #t_test_result_1$p.value
   
-  t_test_result_2 <- t.test(group_0, group_2)
+  #t_test_result_2 <- t.test(group_0, group_2)
+  
+  t_test_result_2 <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_2]-non_responders$continuous_response_stage1[index_0] ,
+                                              group_2 - group_0))
   #t_test_result_2$p.value
   
-  continuous_result <- c(t_test_result_1$p.value, t_test_result_2$p.value)
+  continuous_result <- c(t_test_result_1, t_test_result_2)
   
   #####################add bayesian
   # Define prior distributions for the two groups (Treatment A and Treatment B)
@@ -135,9 +152,12 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   # # Output the result
   # print(paste("Probability that Group 1 has a higher mean than Group 2:", round(prob_diff, 4)))
 
-  prob_diff_A <-  pmixdiff(post_placebo, post_trtA, 0)
-  prob_diff_B <-  pmixdiff(post_placebo, post_trtB, 0)
-
+  # prob_diff_A <-  pmixdiff(post_placebo, post_trtA, 0)
+  # prob_diff_B <-  pmixdiff(post_placebo, post_trtB, 0)
+  prob_diff_A <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                                          post_trtA - post_placebo))
+  prob_diff_B <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_2]-non_responders$continuous_response_stage1[index_0] ,
+                                          post_trtB - post_placebo))
   continuous_result_bayesian <- c(prob_diff_A, prob_diff_B)
   # 
   ####################################################################
@@ -153,11 +173,21 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   group_1 <- mapped_cont_model$fitted.values[index_1]
   group_2 <- mapped_cont_model$fitted.values[index_2]
   # Perform the two-sample t-test
-  t_test_result_21 <- t.test(group_0, group_1)
+  # t_test_result_21 <- t.test(group_0, group_1)
+  # #t_test_result_1$p.value
+  # 
+  # t_test_result_22 <- t.test(group_0, group_2)
+  
+  t_test_result_21 <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                                               group_1 - group_0))
   #t_test_result_1$p.value
   
-  t_test_result_22 <- t.test(group_0, group_2)
-  continous_map1 <- c (t_test_result_21$p.value, t_test_result_22$p.value)
+  t_test_result_22 <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                                               group_2 - group_0))
+  
+  #continous_map1 <- c (t_test_result_21$p.value, t_test_result_22$p.value)
+  
+  continous_map1 <- c (t_test_result_21, t_test_result_22)
   
   ##################add bayesian log
   sd_log <- ifelse(mapping_function(1)<0,1,mapping_function(1))
@@ -181,9 +211,12 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   post_trtB_log <- postmix(prior_B_log, m = mean( mapping_function(group_2)),
                            se = sd( mapping_function(group_2))/sqrt(length( group_2)))
 
-  prob_diff_A_log <-  pmixdiff(post_placebo_log, post_trtA_log, 0)
-  prob_diff_B_log <-  pmixdiff(post_placebo_log, post_trtB_log, 0)
-
+  # prob_diff_A_log <-  pmixdiff(post_placebo_log, post_trtA_log, 0)
+  # prob_diff_B_log <-  pmixdiff(post_placebo_log, post_trtB_log, 0)
+  prob_diff_A_log <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                           post_trtA_log - post_placebo_log))
+  prob_diff_B_log <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                                              post_trtB_log - post_placebo_log))
   continuous_result_bayesian_log <- c(prob_diff_A_log, prob_diff_B_log)
   ####################################################
   
@@ -196,11 +229,16 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   group_1_2 <- mapped_cont_model_2$fitted.values[index_1]
   group_2_2 <- mapped_cont_model_2$fitted.values[index_2]
   # Perform the two-sample t-test
-  t_test_result_221 <- t.test(group_0_2, group_1_2)
+  #t_test_result_221 <- t.test(group_0_2, group_1_2)
   #t_test_result_1$p.value
+  t_test_result_221 <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                           group_1_2 - group_0_2))
   
-  t_test_result_222 <- t.test(group_0_2, group_2_2)
-  continous_map2 <- c (t_test_result_221$p.value, t_test_result_222$p.value)
+  #t_test_result_222 <- t.test(group_0_2, group_2_2)
+  t_test_result_222 <- pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                                                group_2_2 - group_0_2))
+  
+  continous_map2 <- c (t_test_result_221, t_test_result_222)
   
   ##############add bayesian negative expo
   # sd_exp <- ifelse(mapping_function_2(1)<0,1,mapping_function_2(1))
@@ -223,8 +261,13 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   post_trtB_exp <- postmix(prior_B_exp, m = mean( mapping_function_2(group_2)),
                            se = sd( mapping_function_2(group_2))/sqrt(length( group_2)))
 
-  prob_diff_A_exp <-  pmixdiff(post_placebo_exp, post_trtA_exp, 0)
-  prob_diff_B_exp <-  pmixdiff(post_placebo_exp, post_trtB_exp, 0)
+  # prob_diff_A_exp <-  pmixdiff(post_placebo_exp, post_trtA_exp, 0)
+  # prob_diff_B_exp <-  pmixdiff(post_placebo_exp, post_trtB_exp, 0)
+  
+  prob_diff_A_exp <-  pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                                               post_trtA_exp - post_placebo_exp))
+  prob_diff_B_exp <-  pnorm(-1.96 - Z_function(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
+                                               post_trtB_exp - post_placebo_exp))
 
   continuous_result_bayesian_exp <- c(prob_diff_A_exp, prob_diff_B_exp)
   #######################################################################

@@ -151,6 +151,13 @@ ensure_dir_exist(final_table_folder)
                            # trtA_effect <- 2
                            example_data <- spcd_data(num_indvs, n_groups, trtA_effect, diff_stage1, diff_stage2, noise_sd)
                            
+                           #####add while loop to avoid error from data generation process
+                           iter_count  <- 0
+                           while(min(table(example_data$spcd_data_yes$treatment_stage2)) < 3 && iter_count < 1000){
+                             example_data <- spcd_data(num_indvs, n_groups, trtA_effect, diff_stage1, diff_stage2, noise_sd)
+                             iter_count <<- iter_count + 1
+                           }
+                           ######
                            non_responders <- example_data$spcd_data
                            result <- hypothesis_testing (non_responders, trtA_effect,  diff_stage2)
                            
@@ -379,3 +386,4 @@ if(run_parallel)
 }
 
 
+#All Experiemnts Took: Time difference of 5.296393 mins (1000)
