@@ -115,10 +115,10 @@ ensure_dir_exist <- function(directory_path){
 # final_table_folder = paste0("output_spcd_test")
 # ensure_dir_exist(final_table_folder)
 
-scenario_folder = "spcd_test_typeI_trt_bayesian_power"
+scenario_folder = "spcd_test_typeI_iter"
 ensure_dir_exist(scenario_folder)
 
-final_table_folder = paste0("output_spcd_test_typeI_bayesian_power")
+final_table_folder = paste0("output_spcd_test_typeI_iter")
 ensure_dir_exist(final_table_folder)
 
 

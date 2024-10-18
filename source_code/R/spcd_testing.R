@@ -34,7 +34,7 @@
 
 Z_function <- function (diff_stage1_trt, diff_stage2_trt, w_weight = 0.5) {
   Z_value <- (w_weight * mean (diff_stage1_trt) + (1 - w_weight) * mean(diff_stage2_trt))/sqrt (w_weight^2 * (sd(diff_stage1_trt)/sqrt(length(diff_stage1_trt)))^2 +
-                                                                                                  2 * w_weight * (1 - w_weight) *cov(diff_stage1_trt, diff_stage2_trt)+
+                                                                                                  #2 * w_weight * (1 - w_weight) *cov(diff_stage1_trt, diff_stage2_trt)+
                                                                                                   (1 - w_weight)^2*(sd(diff_stage2_trt)/sqrt(length(diff_stage2_trt)))^2
                                                                                           )
   return(Z_value)
