@@ -31,7 +31,7 @@ load("/Users/xzhao17/Documents/GitHub/SPCD/output_spcd_test_typeI_bayesian_power
 
 #type I
 # final_table[,1:6]
-# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2 noise_sd
+#                           num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2 noise_sd
 # experiment_output            200                  2                  1           0           0        1
 # experiment_output.1          400                  2                  1           0           0        1
 # experiment_output.2          600                  2                  1           0           0        1
@@ -40,9 +40,11 @@ load("/Users/xzhao17/Documents/GitHub/SPCD/output_spcd_test_typeI_bayesian_power
 # experiment_output.5          600                  2                  1           0           0        4
 power_data <- function(final_table, power_col, power01_col, noise_sd){
   final_table <- final_table [final_table$noise_sd==noise_sd,]
-  #2 :  3: "diff_stage1" , 5: "noise_sd" 
-  final_table <- final_table [,-c(3,5)]
-  binary_result <- final_table[,1:3]
+  #2 : trtA_effect_stage1 3:trtA_effect_stage2, 4 "diff_stage1" , 5:diff_stage2,  6: "noise_sd" 
+  #final_table <- final_table [,-c(3,5)]
+  final_table <- final_table [,-c(6)]
+  #binary_result <- final_table[,1:3]
+  binary_result <- final_table[,1:7]
   binary_result <- rbind(binary_result,binary_result)
   binary_result$power <- c(0)
   binary_result$power01 <- c(0)
@@ -68,7 +70,7 @@ continuous_power_expmap <- power_data(final_table, 7, 8 ,1)
 # continuous_power_expmap2 <- power_data(final_table, 7, 8 ,2)
 ###############################################################
 #continuous_power_logmap
-# num_subjects diff_stage2  power power01 trt
+#                       num_subjects diff_stage2  power power01 trt
 # experiment_output             600           0 0.0504  0.1074   A
 # experiment_output.1           900           0 0.0632  0.1154   A
 # experiment_output1            600           0 0.0532  0.1104   B
@@ -136,8 +138,8 @@ save(binary_power_data, continuous_power_data, continuous_power_logmap, continuo
 ####################################################
 library(ggplot2)
 library(data.table)
-power_fig_fun <- function (binary_power_data, diff_stage2, trtA_effect){
-  power_by_time_new_long <- melt(setDT(binary_power_data), id.vars = c("num_subjects", "trtA_effect", "diff_stage2", "trt"),
+power_fig_fun <- function (binary_power_data, diff_stage2, trtA_effect_stage1, trtA_effect_stage2){
+  power_by_time_new_long <- melt(setDT(binary_power_data), id.vars = c("num_subjects", "trtA_effect_stage1","trtA_effect_stage2",  "diff_stage2", "trt"),
                                  variable.name = "power_both")
   ########################################################
   ########################################################
@@ -162,7 +164,7 @@ power_fig_fun <- function (binary_power_data, diff_stage2, trtA_effect){
       legend.margin = margin(6, 6, 6, 6)
     )#+
   
-  power_by_time_plot_new_B=ggplot(power_by_time_new_long[power_by_time_new_long$trt == "B" & power_by_time_new_long$trtA_effect== 3.0,],
+  power_by_time_plot_new_B=ggplot(power_by_time_new_long[power_by_time_new_long$trt == "B" & power_by_time_new_long$trtA_effect_stage1== 3.0 &power_by_time_new_long$trtA_effect_stage2== 3.0,],
                                 aes(x=diff_stage2,y=unlist(value),color=as.factor(num_subjects),shape=as.factor(num_subjects)))+
     geom_line() +
     facet_grid(as.factor(trt_new)~power_both_new,

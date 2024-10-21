@@ -60,7 +60,8 @@ options <- parse_args(parser)
 
 options_jobid <- 1
 options_numcpus <- 10
-options_replicas <- 5000
+#options_replicas <- 5000
+options_replicas <- 1000
 # Use the options
 cat("Job Idx:", options_jobid, "\n")
 cat("Num CPUs:", options_numcpus, "\n")
@@ -115,10 +116,12 @@ ensure_dir_exist <- function(directory_path){
 # final_table_folder = paste0("output_spcd_test")
 # ensure_dir_exist(final_table_folder)
 
-scenario_folder = "spcd_test_typeI_iter_trt12"
+#scenario_folder = "spcd_test_typeI_iter_trt12_new"
+scenario_folder = "spcd_test_power_iter_trt12_new"
 ensure_dir_exist(scenario_folder)
 
-final_table_folder = paste0("output_spcd_test_typeI_iter_trt12")
+#final_table_folder = paste0("output_spcd_test_typeI_iter_trt12_new")
+final_table_folder = paste0("output_spcd_test_power_iter_trt12_new")
 ensure_dir_exist(final_table_folder)
 
 
@@ -145,11 +148,13 @@ ensure_dir_exist(final_table_folder)
                            #                       
                            #######################################################################
                            #spcd_data_test <- spcd_data(n, n_groups, diff_stage1, diff_stage2)
-                           # num_indvs <- 400
+                           # num_indvs <- 200
                            # n_groups <- 3
                            # diff_stage1 <- 0
                            # diff_stage2 <- 0
-                           # trtA_effect <- 2
+                           # trtA_effect_stage1 <- 2
+                           # trtA_effect_stage1 <- 1
+                           # num_replicas <- 5000
                            example_data <- spcd_data(num_indvs, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, noise_sd)
                            
                            #####add while loop to avoid error from data generation process
@@ -160,10 +165,10 @@ ensure_dir_exist(final_table_folder)
                            }
                            ######
                            non_responders <- example_data$spcd_data
-                           result <- hypothesis_testing (non_responders, trtA_effect_stage1, trtA_effect_stage2, diff_stage2)
+                           result <- hypothesis_testing (non_responders, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, num_replicas)
                            
                            non_responders2 <- example_data$spcd_data_yes
-                           result2 <- hypothesis_testing (non_responders2, trtA_effect_stage1, trtA_effect_stage2, diff_stage2)
+                           result2 <- hypothesis_testing (non_responders2, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, num_replicas)
                            
                            # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
                            #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2))
@@ -261,9 +266,17 @@ run_experiment_hypothesis <- function(exp_idx,
                                          ".RData"))
  
   #power <- simulation_pvalues[1,] 
-  power <- apply(simulation_pvalues, 1, function(x){sum(x<=alpha)/length(simulation_pvalues[1,])})
-  power01 <- apply(simulation_pvalues, 1, function(x){sum(x<=alpha2)/length(simulation_pvalues[1,])})
+ # if (num_replicas == 5000){
+    power <- apply(simulation_pvalues, 1, function(x){sum(x<=alpha/2)/length(simulation_pvalues[1,])})
+    power01 <- apply(simulation_pvalues, 1, function(x){sum(x<=alpha2/2)/length(simulation_pvalues[1,])})
+    
+ # }
   
+  # if (num_replicas == 1000){
+  #   power <- apply(simulation_pvalues, 1, function(x){sum(x>=(1-alpha/2))/length(simulation_pvalues[1,])})
+  #   power01 <- apply(simulation_pvalues, 1, function(x){sum(x>=(1-alpha2/2))/length(simulation_pvalues[1,])})
+  #   
+  # }
   
   timeKeeperNext()
   
