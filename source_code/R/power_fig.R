@@ -28,6 +28,16 @@
 ###
 #load("./output_spcd_test/final_table.RData")
 load("/Users/xzhao17/Documents/GitHub/SPCD/output_spcd_test_typeI_bayesian_power/spcd_power__1000_10_1.RData")
+
+#type I
+# final_table[,1:6]
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2 noise_sd
+# experiment_output            200                  2                  1           0           0        1
+# experiment_output.1          400                  2                  1           0           0        1
+# experiment_output.2          600                  2                  1           0           0        1
+# experiment_output.3          200                  2                  1           0           0        4
+# experiment_output.4          400                  2                  1           0           0        4
+# experiment_output.5          600                  2                  1           0           0        4
 power_data <- function(final_table, power_col, power01_col, noise_sd){
   final_table <- final_table [final_table$noise_sd==noise_sd,]
   #2 :  3: "diff_stage1" , 5: "noise_sd" 

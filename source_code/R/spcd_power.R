@@ -60,7 +60,7 @@ options <- parse_args(parser)
 
 options_jobid <- 1
 options_numcpus <- 10
-options_replicas <- 1000
+options_replicas <- 5000
 # Use the options
 cat("Job Idx:", options_jobid, "\n")
 cat("Num CPUs:", options_numcpus, "\n")
@@ -115,10 +115,10 @@ ensure_dir_exist <- function(directory_path){
 # final_table_folder = paste0("output_spcd_test")
 # ensure_dir_exist(final_table_folder)
 
-scenario_folder = "spcd_test_typeI_iter"
+scenario_folder = "spcd_test_typeI_iter_trt12"
 ensure_dir_exist(scenario_folder)
 
-final_table_folder = paste0("output_spcd_test_typeI_iter")
+final_table_folder = paste0("output_spcd_test_typeI_iter_trt12")
 ensure_dir_exist(final_table_folder)
 
 
@@ -129,7 +129,8 @@ ensure_dir_exist(final_table_folder)
 #                                      diff_stage1 = 0.5){
   spcd_testing_simulation <- function (num_replicas, 
                                        num_indvs,
-                                       trtA_effect,
+                                       trtA_effect_stage1,
+                                       trtA_effect_stage2,
                                        diff_stage1 ,
                                        diff_stage2 ,
                                        noise_sd,
@@ -149,20 +150,20 @@ ensure_dir_exist(final_table_folder)
                            # diff_stage1 <- 0
                            # diff_stage2 <- 0
                            # trtA_effect <- 2
-                           example_data <- spcd_data(num_indvs, n_groups, trtA_effect, diff_stage1, diff_stage2, noise_sd)
+                           example_data <- spcd_data(num_indvs, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, noise_sd)
                            
                            #####add while loop to avoid error from data generation process
                            iter_count  <- 0
                            while(min(table(example_data$spcd_data_yes$treatment_stage2)) < 3 && iter_count < 1000){
-                             example_data <- spcd_data(num_indvs, n_groups, trtA_effect, diff_stage1, diff_stage2, noise_sd)
+                             example_data <- spcd_data(num_indvs, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, noise_sd)
                              iter_count <<- iter_count + 1
                            }
                            ######
                            non_responders <- example_data$spcd_data
-                           result <- hypothesis_testing (non_responders, trtA_effect,  diff_stage2)
+                           result <- hypothesis_testing (non_responders, trtA_effect_stage1, trtA_effect_stage2, diff_stage2)
                            
                            non_responders2 <- example_data$spcd_data_yes
-                           result2 <- hypothesis_testing (non_responders2, trtA_effect,  diff_stage2)
+                           result2 <- hypothesis_testing (non_responders2, trtA_effect_stage1, trtA_effect_stage2, diff_stage2)
                            
                            # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
                            #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2))
@@ -216,7 +217,8 @@ ensure_dir_exist(final_table_folder)
 source("./source_code/R/time_track_function.R")
 run_experiment_hypothesis <- function(exp_idx,
                                       num_indvs,
-                                      trtA_effect,
+                                      trtA_effect_stage1,
+                                      trtA_effect_stage2,
                                       diff_stage1,
                                       diff_stage2 ,
                                       noise_sd, 
@@ -225,14 +227,17 @@ run_experiment_hypothesis <- function(exp_idx,
                                       alpha2 = 0.1){
   
   exp_str <- paste("Track time for \nNum Subjects:\t", num_indvs,
-                   "\n trtA_effect:\t",trtA_effect,
+                   "\n trtA_effect stage 1:\t",trtA_effect_stage1,
+                   "\n trtA_effect stage 2:\t",trtA_effect_stage2,
+                   "\n diff_stage1:\t",diff_stage1,
                    "\n diff_stage2:\t",diff_stage2,
                    "\n noise_sd:\t",noise_sd)
   writeLines(exp_str)
   timeKeeperStart(exp_str)
   simulation_scenarios <- spcd_testing_simulation(num_replicas = num_replicas, 
                                                  num_indvs = num_indvs, 
-                                                 trtA_effect = trtA_effect,
+                                                 trtA_effect_stage1 = trtA_effect_stage1,
+                                                 trtA_effect_stage2 = trtA_effect_stage2,
                                                  diff_stage1 = diff_stage1,
                                                  diff_stage2 =  diff_stage2,
                                                  noise_sd
@@ -247,7 +252,10 @@ run_experiment_hypothesis <- function(exp_idx,
                                          
                                        
                                          "_n", num_indvs,
-                                         "_ diff_stage2",  diff_stage2,
+                                         "_trtA_effect_stage1",  trtA_effect_stage1,
+                                         "_trtA_effect_stage2",  trtA_effect_stage2,
+                                         "_diff_stage1",  diff_stage1,
+                                         "_diff_stage2",  diff_stage2,
                                          "_",options_numcpus,
                                          "_",options_jobid,
                                          ".RData"))
@@ -289,11 +297,12 @@ set.seed(123456 + 10 * options_jobid)
 #set.seed(123456 + 6 * options_jobid)
 generate_ed_table <- function(subjects_vector,
                               diff_stage1,
-                              trtA_effect_vector,
+                              trtA_effect_stage1_vector,
+                              trtA_effect_stage2_vector,
                               diff_stage2_vector,
                               noise_sd_vector
                               ){
-  ed_table_ret <- expand.grid(subjects_vector, trtA_effect_vector, diff_stage1, diff_stage2_vector, noise_sd_vector)
+  ed_table_ret <- expand.grid(subjects_vector,  trtA_effect_stage1_vector, trtA_effect_stage2_vector, diff_stage1, diff_stage2_vector, noise_sd_vector)
   return(ed_table_ret)
 }
 
@@ -310,7 +319,8 @@ if (options_replicas == 1000){
                                  diff_stage1,
                                  # trtA_effect_vector = c(3, 3.5, 4, 4.5, 5, 5.5),
                                  # diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5,  6.5),
-                                 trtA_effect_vector = c(3, 3.5, 4, 4.5, 5, 5.5),
+                                 trtA_effect_stage1_vector = c(3, 3.5, 4, 4.5, 5, 5.5),
+                                 trtA_effect_stage2_vector = c(3, 3.5, 4, 4.5, 5, 5.5),
                                  diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5,  6.5),
                                  #noise_sd_vector = c(1, 2)
                                  noise_sd_vector = c(1)
@@ -325,9 +335,11 @@ if (options_replicas == 5000){
   ed_table1 <- generate_ed_table(subjects_vector = c(200, 400,600),
                                  diff_stage1,
                                  #trtA_effect,
-                                 trtA_effect_vector = c (2), 
+                                 trtA_effect_stage1_vector = c(2),
+                                 trtA_effect_stage2_vector = c(1),
                                  diff_stage2_vector = c(0),
-                                 noise_sd_vector = c(1, 4, 8, 16))
+                                 #noise_sd_vector = c(1, 4, 8, 16))
+                                 noise_sd_vector = c(1, 4))
 }
 
 # ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
@@ -336,20 +348,22 @@ if (options_replicas == 5000){
 ed_table <- ed_table1
 ###################
 
-colnames(ed_table) <- c("num_subjects","trtA_effect","diff_stage1", "diff_stage2", "noise_sd")
+colnames(ed_table) <- c("num_subjects","trtA_effect_stage1", "trtA_effect_stage2", "diff_stage1", "diff_stage2", "noise_sd")
 
 ##########################
 all_experiment_outputs <- list()
 for (row_index in 1:dim(ed_table)[1]){
   num_indvs <- ed_table[row_index,]$num_subjects
-  trtA_effect <- ed_table[row_index,]$trtA_effect
+  trtA_effect_stage1 <- ed_table[row_index,]$trtA_effect_stage1
+  trtA_effect_stage2 <- ed_table[row_index,]$trtA_effect_stage2
   diff_stage2 <- ed_table[row_index,]$diff_stage2
   diff_stage1 <- ed_table[row_index,]$diff_stage1
   noise_sd <- ed_table[row_index,]$noise_sd
 
   experiment_output <- run_experiment_hypothesis( row_index,
                                                   num_indvs , 
-                                                  trtA_effect,
+                                                 trtA_effect_stage1,
+                                                 trtA_effect_stage2,
                                                   diff_stage1,
                                                   diff_stage2,
                                                   noise_sd)
@@ -357,7 +371,10 @@ for (row_index in 1:dim(ed_table)[1]){
                                        
                                         
                                         "_n", num_indvs, 
-                                        "_dff2", diff_stage2,
+                                        "_trtA_effect_stage1",  trtA_effect_stage1,
+                                        "_trtA_effect_stage2",  trtA_effect_stage2,
+                                        "_diff_stage1",  diff_stage1,
+                                        "_diff_stage2",  diff_stage2,
                                         "_noisesd", noise_sd,
                                         "_", options_numcpus,
                                         "_", options_jobid,
@@ -387,3 +404,7 @@ if(run_parallel)
 
 
 #All Experiemnts Took: Time difference of 5.296393 mins (1000)
+# All Experiemnts Took: Time difference of 2.395469 mins power
+
+#tyie I: All Experiemnts Took: Time difference of 4.932501 mins 
+#All Experiemnts Took: Time difference of 1.376206 mins 

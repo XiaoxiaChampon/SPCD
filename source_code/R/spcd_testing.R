@@ -42,7 +42,7 @@ Z_function <- function (diff_stage1_trt, diff_stage2_trt, w_weight = 0.5) {
 
 
 
-hypothesis_testing <- function(non_responders, trtA_effect,  diff_stage2 ){
+hypothesis_testing <- function(non_responders, trtA_effect_stage1, trtA_effect_stage2, diff_stage2 ){
   # Perform logistic regression on pooled data
   
   # Set "0" as the reference level
