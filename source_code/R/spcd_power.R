@@ -60,8 +60,8 @@ options <- parse_args(parser)
 
 options_jobid <- 1
 options_numcpus <- 10
-options_replicas <- 5000
-#options_replicas <- 1000
+#options_replicas <- 5000
+options_replicas <- 1000
 # Use the options
 cat("Job Idx:", options_jobid, "\n")
 cat("Num CPUs:", options_numcpus, "\n")
@@ -116,11 +116,11 @@ ensure_dir_exist <- function(directory_path){
 # final_table_folder = paste0("output_spcd_test")
 # ensure_dir_exist(final_table_folder)
 
-scenario_folder = "spcd_test_typeI_weight"
+scenario_folder = "spcd_test_typeI_weight_power"
 #scenario_folder = "spcd_test_power_iter_trt12_new"
 ensure_dir_exist(scenario_folder)
 
-final_table_folder = paste0("output_spcd_test_typeI_weight")
+final_table_folder = paste0("output_spcd_test_typeI_weight_power")
 #final_table_folder = paste0("output_spcd_test_power_iter_trt12_new")
 ensure_dir_exist(final_table_folder)
 
@@ -357,7 +357,7 @@ if (options_replicas == 1000){
                                  diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5,  6.5),
                                  #noise_sd_vector = c(1, 2)
                                  noise_sd_vector = c(1),
-                                 w_weight_vector = c (0.4, 0.5, 0.6)
+                                 w_weight_vector = c (0.6, 0.8)
                                  )
 }
 
@@ -445,6 +445,7 @@ if(run_parallel)
 
 #All Experiemnts Took: Time difference of 5.296393 mins (1000)
 # All Experiemnts Took: Time difference of 2.395469 mins power
+#All Experiemnts Took: Time difference of 1.483734 hours 
 
 #tyie I: All Experiemnts Took: Time difference of 4.932501 mins 
 #All Experiemnts Took: Time difference of 1.376206 mins 
