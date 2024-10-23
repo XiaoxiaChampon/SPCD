@@ -33,7 +33,7 @@
 
 
 #Z_function <- function ( diff_stage1_trt, diff_stage2_trt, w_weight = 0.5) {
-Z_function <- function (diff_stage1, diff_stage2, diff_stage1_trt, diff_stage2_trt, w_weight = 0.5) {
+Z_function <- function (diff_stage1, diff_stage2, diff_stage1_trt, diff_stage2_trt, w_weight) {
   
   # Z_value <- (w_weight * mean (diff_stage1_trt) + (1 - w_weight) * mean(diff_stage2_trt))/sqrt (w_weight^2 * (sd(diff_stage1_trt)/sqrt(length(diff_stage1_trt)))^2 +
   #                                                                                                 #2 * w_weight * (1 - w_weight) *cov(diff_stage1_trt, diff_stage2_trt)+
@@ -48,7 +48,7 @@ Z_function <- function (diff_stage1, diff_stage2, diff_stage1_trt, diff_stage2_t
 
 
 
-hypothesis_testing <- function(non_responders, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2 , num_replicas){
+hypothesis_testing <- function(non_responders, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2 , num_replicas, w_weight){
   # Perform logistic regression on pooled data
   
   # Set "0" as the reference level
@@ -75,11 +75,12 @@ hypothesis_testing <- function(non_responders, trtA_effect_stage1, trtA_effect_s
   # Total number of trials in each group
   totals_2 <- c(length(index_0), length(index_2))
   test_result_2 <- prop.test(successes_2, totals_2)
-  # Perform the two-proportion z-test
-  #test_result_2$p.value
-
-  binary_result <- c(test_result_1$p.value , test_result_2$p.value)
-  
+  # # Perform the two-proportion z-test
+  # #test_result_2$p.value
+  # 
+   binary_result <- c(test_result_1$p.value , test_result_2$p.value)
+ 
+  # 
   #################bayesian binary
   #binary
   # Define prior distributions for the two groups (Treatment A and Treatment B)
@@ -124,21 +125,24 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   if (num_replicas == 1000){
     t_test_result_1 <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                                 non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                group_1 - group_0))
+                                                group_1 - group_0,
+                                                w_weight))
     #t_test_result_1$p.value
     
     #t_test_result_2 <- t.test(group_0, group_2)
     
     t_test_result_2 <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                                 non_responders$continuous_response_stage1[index_2]-non_responders$continuous_response_stage1[index_0] ,
-                                                group_2 - group_0))
+                                                group_2 - group_0,
+                                                w_weight))
   }
   
   if (num_replicas == 5000){
-    t_test_result_1 <- pnorm( Z_function(mean(non_responders$continuous_response_stage1[index_1]--non_responders$continuous_response_stage1[index_0]), 
+    t_test_result_1 <- pnorm( Z_function(mean(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]), 
                                          mean(group_1 - group_0 ),
                                                 non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                group_1 - group_0))
+                                                group_1 - group_0,
+                                         w_weight))
     #t_test_result_1$p.value
     
     #t_test_result_2 <- t.test(group_0, group_2)
@@ -146,7 +150,8 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
     t_test_result_2 <- pnorm( Z_function(mean(non_responders$continuous_response_stage1[index_2]-non_responders$continuous_response_stage1[index_0]), 
                                          mean(group_2 - group_0),
                                                 non_responders$continuous_response_stage1[index_2]-non_responders$continuous_response_stage1[index_0] ,
-                                                group_2 - group_0))
+                                                group_2 - group_0,
+                                         w_weight))
   }
   
   #t_test_result_2$p.value
@@ -185,21 +190,25 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   if (num_replicas == 1000){
   prob_diff_A <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                           non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                          post_trtA - post_placebo))
+                                          post_trtA - post_placebo,
+                                          w_weight))
   prob_diff_B <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                           non_responders$continuous_response_stage1[index_2]-non_responders$continuous_response_stage1[index_0] ,
-                                          post_trtB - post_placebo))
+                                          post_trtB - post_placebo,
+                                          w_weight))
   }
   
   if (num_replicas == 5000){
     prob_diff_A <- pnorm(Z_function(mean(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]),
                                     mean(post_trtA - post_placebo),
                                             non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                            post_trtA - post_placebo))
+                                            post_trtA - post_placebo,
+                                    w_weight))
     prob_diff_B <- pnorm(Z_function(mean(non_responders$continuous_response_stage1[index_2]-non_responders$continuous_response_stage1[index_0]), 
                                     mean( post_trtB - post_placebo),
                                             non_responders$continuous_response_stage1[index_2]-non_responders$continuous_response_stage1[index_0] ,
-                                            post_trtB - post_placebo))
+                                            post_trtB - post_placebo,
+                                    w_weight))
   }
   continuous_result_bayesian <- c(prob_diff_A, prob_diff_B)
   # 
@@ -223,12 +232,14 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   if (num_replicas == 1000){
   t_test_result_21 <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                                non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                               group_1 - group_0))
+                                               group_1 - group_0,
+                                               w_weight))
   #t_test_result_1$p.value
   
   t_test_result_22 <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                                non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                               group_2 - group_0))
+                                               group_2 - group_0,
+                                               w_weight))
   }
   
   if (num_replicas == 5000){
@@ -236,13 +247,15 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
     t_test_result_21 <- pnorm(Z_function(       mean(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]), 
                                                 mean(group_1 - group_0),
                                                  non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                 group_1 - group_0))
+                                                 group_1 - group_0,
+                                                w_weight))
     #t_test_result_1$p.value
     
     t_test_result_22 <- pnorm(Z_function(mean(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]), 
                                          mean(group_2 - group_0),
                                                  non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                 group_2 - group_0))
+                                                 group_2 - group_0,
+                                         w_weight))
   }
   
   
@@ -277,21 +290,25 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   if (num_replicas == 1000){
   prob_diff_A_log <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                               non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                           post_trtA_log - post_placebo_log))
+                           post_trtA_log - post_placebo_log,
+                           w_weight))
   prob_diff_B_log <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                               non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                              post_trtB_log - post_placebo_log))
+                                              post_trtB_log - post_placebo_log,
+                                              w_weight))
   }
   
   if (num_replicas == 5000){
     prob_diff_A_log <- pnorm(Z_function(mean( non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]), 
                                         mean(post_trtA_log - post_placebo_log),
                                                 non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                post_trtA_log - post_placebo_log))
+                                                post_trtA_log - post_placebo_log,
+                                        w_weight))
     prob_diff_B_log <- pnorm(Z_function(mean( non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]), 
                                         mean(post_trtB_log - post_placebo_log),
                                                 non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                post_trtB_log - post_placebo_log))
+                                                post_trtB_log - post_placebo_log,
+                                        w_weight))
   }
   continuous_result_bayesian_log <- c(prob_diff_A_log, prob_diff_B_log)
   ####################################################
@@ -310,25 +327,29 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   if (num_replicas == 1000){
   t_test_result_221 <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                                 non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                           group_1_2 - group_0_2))
+                           group_1_2 - group_0_2,
+                           w_weight))
   
   #t_test_result_222 <- t.test(group_0_2, group_2_2)
   t_test_result_222 <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                                 non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                group_2_2 - group_0_2))
+                                                group_2_2 - group_0_2,
+                                                w_weight))
   }
   
   if (num_replicas == 5000){
     t_test_result_221 <- pnorm( Z_function(mean(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]), 
                                            mean( group_1_2 - group_0_2),
                                                   non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                  group_1_2 - group_0_2))
+                                                  group_1_2 - group_0_2,
+                                           w_weight))
     
     #t_test_result_222 <- t.test(group_0_2, group_2_2)
     t_test_result_222 <- pnorm( Z_function(mean(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]), 
                                            mean( group_2_2 - group_0_2),
                                                   non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                  group_2_2 - group_0_2))
+                                                  group_2_2 - group_0_2,
+                                           w_weight))
   }
   continous_map2 <- c (t_test_result_221, t_test_result_222)
   
@@ -358,21 +379,25 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   if (num_replicas == 1000){
   prob_diff_A_exp <-  pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                                non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                               post_trtA_exp - post_placebo_exp))
+                                               post_trtA_exp - post_placebo_exp,
+                                               w_weight))
   prob_diff_B_exp <-  pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                                non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                               post_trtB_exp - post_placebo_exp))
+                                               post_trtB_exp - post_placebo_exp,
+                                               w_weight))
   }
   
   if (num_replicas == 5000){
     prob_diff_A_exp <-  pnorm( Z_function(mean(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]), 
                                           mean(post_trtA_exp - post_placebo_exp),
                                                  non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                 post_trtA_exp - post_placebo_exp))
+                                                 post_trtA_exp - post_placebo_exp,
+                                          w_weight))
     prob_diff_B_exp <-  pnorm( Z_function(mean(non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0]), 
                                           mean( post_trtB_exp - post_placebo_exp),
                                                  non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
-                                                 post_trtB_exp - post_placebo_exp))
+                                                 post_trtB_exp - post_placebo_exp,
+                                          w_weight))
   }
   continuous_result_bayesian_exp <- c(prob_diff_A_exp, prob_diff_B_exp)
   #######################################################################

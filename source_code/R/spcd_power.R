@@ -60,8 +60,8 @@ options <- parse_args(parser)
 
 options_jobid <- 1
 options_numcpus <- 10
-#options_replicas <- 5000
-options_replicas <- 1000
+options_replicas <- 5000
+#options_replicas <- 1000
 # Use the options
 cat("Job Idx:", options_jobid, "\n")
 cat("Num CPUs:", options_numcpus, "\n")
@@ -116,12 +116,12 @@ ensure_dir_exist <- function(directory_path){
 # final_table_folder = paste0("output_spcd_test")
 # ensure_dir_exist(final_table_folder)
 
-#scenario_folder = "spcd_test_typeI_iter_trt12_new"
-scenario_folder = "spcd_test_power_iter_trt12_new"
+scenario_folder = "spcd_test_typeI_weight"
+#scenario_folder = "spcd_test_power_iter_trt12_new"
 ensure_dir_exist(scenario_folder)
 
-#final_table_folder = paste0("output_spcd_test_typeI_iter_trt12_new")
-final_table_folder = paste0("output_spcd_test_power_iter_trt12_new")
+final_table_folder = paste0("output_spcd_test_typeI_weight")
+#final_table_folder = paste0("output_spcd_test_power_iter_trt12_new")
 ensure_dir_exist(final_table_folder)
 
 
@@ -137,6 +137,7 @@ ensure_dir_exist(final_table_folder)
                                        diff_stage1 ,
                                        diff_stage2 ,
                                        noise_sd,
+                                       w_weight,
                                        n_groups = 3){
   cat("SPCD Hypothesis Testing Simulation \nNum Replicas:\t", num_replicas)
   #num_replicas=2
@@ -153,8 +154,10 @@ ensure_dir_exist(final_table_folder)
                            # diff_stage1 <- 0
                            # diff_stage2 <- 0
                            # trtA_effect_stage1 <- 2
-                           # trtA_effect_stage1 <- 1
+                           # trtA_effect_stage2 <- 1
                            # num_replicas <- 5000
+                           # w_weight <- 0.4
+                           #noise_sd <- 1
                            example_data <- spcd_data(num_indvs, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, noise_sd)
                            
                            #####add while loop to avoid error from data generation process
@@ -165,10 +168,10 @@ ensure_dir_exist(final_table_folder)
                            }
                            ######
                            non_responders <- example_data$spcd_data
-                           result <- hypothesis_testing (non_responders, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, num_replicas)
+                           result <- hypothesis_testing (non_responders, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, num_replicas, w_weight)
                            
                            non_responders2 <- example_data$spcd_data_yes
-                           result2 <- hypothesis_testing (non_responders2, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, num_replicas)
+                           result2 <- hypothesis_testing (non_responders2, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, num_replicas, w_weight)
                            
                            # return(list("binary_result"=result$binary_result,"continuous_result"=result$continuous_result,
                            #             "continous_map1"=result$continous_map1,"continous_map2"=result$continous_map2))
@@ -208,12 +211,22 @@ ensure_dir_exist(final_table_folder)
 }
 
 #set.seed(123456 + 10 * options_jobid)
- # set.seed(123456 + 10 * 2)
+  #set.seed(123456 + 10 * 2)
  #  result_all <- spcd_testing_simulation  (num_replicas = 6,num_indvs= 400, trtA_effect = 2,  diff_stage1 = 0,
  #   diff_stage2 = 0,1)
- #  
- #  result_all <- spcd_testing_simulation  (num_replicas = 6,num_indvs= 400, trtA_effect = 3,  diff_stage1 = 0.75,
- #                                          diff_stage2 = 1.5)
+ 
+  # num_replicas, 
+  # num_indvs,
+  # trtA_effect_stage1,
+  # trtA_effect_stage2,
+  # diff_stage1 ,
+  # diff_stage2 ,
+  # noise_sd,
+  # w_weight,
+  # n_groups = 3
+   # result_all <- spcd_testing_simulation  (num_replicas = 6,num_indvs= 200, trtA_effect_stage1 =2, trtA_effect_stage2 =1,  diff_stage1 = 0,
+   #                                        diff_stage2 = 0, noise_sd = 1,
+   #                                         w_weight = 0.4, n_groups = 3)
 # simulation_pvalues <- matrix(unlist(result_all), nrow=8)
 # power <- apply(simulation_pvalues, 1, function(x){sum(x<=0.05)/length(simulation_pvalues[1,])})
 # power01 <- apply(simulation_pvalues, 1, function(x){sum(x<=0.1)/length(simulation_pvalues[1,])})
@@ -228,6 +241,7 @@ run_experiment_hypothesis <- function(exp_idx,
                                       diff_stage2 ,
                                       noise_sd, 
                                       num_replicas = options_replicas,
+                                      w_weight,
                                       alpha = 0.05,
                                       alpha2 = 0.1){
   
@@ -236,6 +250,7 @@ run_experiment_hypothesis <- function(exp_idx,
                    "\n trtA_effect stage 2:\t",trtA_effect_stage2,
                    "\n diff_stage1:\t",diff_stage1,
                    "\n diff_stage2:\t",diff_stage2,
+                   "\n w_weight:\t",w_weight,
                    "\n noise_sd:\t",noise_sd)
   writeLines(exp_str)
   timeKeeperStart(exp_str)
@@ -245,7 +260,8 @@ run_experiment_hypothesis <- function(exp_idx,
                                                  trtA_effect_stage2 = trtA_effect_stage2,
                                                  diff_stage1 = diff_stage1,
                                                  diff_stage2 =  diff_stage2,
-                                                 noise_sd
+                                                 noise_sd = noise_sd,
+                                                 w_weight = w_weight 
                                                 )
   
   #simulation_pvalues <- matrix(unlist(simulation_scenarios), nrow=8)
@@ -261,14 +277,15 @@ run_experiment_hypothesis <- function(exp_idx,
                                          "_trtA_effect_stage2",  trtA_effect_stage2,
                                          "_diff_stage1",  diff_stage1,
                                          "_diff_stage2",  diff_stage2,
+                                         "_w_weight",  w_weight,
                                          "_",options_numcpus,
                                          "_",options_jobid,
                                          ".RData"))
  
   #power <- simulation_pvalues[1,] 
  # if (num_replicas == 5000){
-    power <- apply(simulation_pvalues, 1, function(x){sum(x<=alpha/2)/length(simulation_pvalues[1,])})
-    power01 <- apply(simulation_pvalues, 1, function(x){sum(x<=alpha2/2)/length(simulation_pvalues[1,])})
+    power <- apply(simulation_pvalues, 1, function(x){sum(x<=alpha)/length(simulation_pvalues[1,])})
+    power01 <- apply(simulation_pvalues, 1, function(x){sum(x<=alpha2)/length(simulation_pvalues[1,])})
     
  # }
   
@@ -313,9 +330,10 @@ generate_ed_table <- function(subjects_vector,
                               trtA_effect_stage1_vector,
                               trtA_effect_stage2_vector,
                               diff_stage2_vector,
-                              noise_sd_vector
+                              noise_sd_vector,
+                              w_weight_vector
                               ){
-  ed_table_ret <- expand.grid(subjects_vector,  trtA_effect_stage1_vector, trtA_effect_stage2_vector, diff_stage1, diff_stage2_vector, noise_sd_vector)
+  ed_table_ret <- expand.grid(subjects_vector,  trtA_effect_stage1_vector, trtA_effect_stage2_vector, diff_stage1, diff_stage2_vector, noise_sd_vector, w_weight_vector)
   return(ed_table_ret)
 }
 
@@ -336,7 +354,8 @@ if (options_replicas == 1000){
                                  trtA_effect_stage2_vector = c(3, 3.5, 4, 4.5, 5, 5.5),
                                  diff_stage2_vector = c(1.5, 2.5, 3.5, 4.5, 5.5,  6.5),
                                  #noise_sd_vector = c(1, 2)
-                                 noise_sd_vector = c(1)
+                                 noise_sd_vector = c(1),
+                                 w_weight_vector = c (0.4, 0.5, 0.6)
                                  )
 }
 
@@ -352,7 +371,10 @@ if (options_replicas == 5000){
                                  trtA_effect_stage2_vector = c(1),
                                  diff_stage2_vector = c(0),
                                  #noise_sd_vector = c(1, 4, 8, 16))
-                                 noise_sd_vector = c(1, 4))
+                                 #noise_sd_vector = c(1, 4),
+                                 noise_sd_vector = c(1, 4),
+                                 #w_weight_vector = c (0.4, 0.5, 0.6)
+                                 w_weight_vector = c (0.6, 0.7, 0.8))
 }
 
 # ed_table1 <- generate_ed_table(subjects_vector = c(300,600),
@@ -361,7 +383,7 @@ if (options_replicas == 5000){
 ed_table <- ed_table1
 ###################
 
-colnames(ed_table) <- c("num_subjects","trtA_effect_stage1", "trtA_effect_stage2", "diff_stage1", "diff_stage2", "noise_sd")
+colnames(ed_table) <- c("num_subjects","trtA_effect_stage1", "trtA_effect_stage2", "diff_stage1", "diff_stage2", "noise_sd", " w_weight")
 
 ##########################
 all_experiment_outputs <- list()
@@ -372,14 +394,16 @@ for (row_index in 1:dim(ed_table)[1]){
   diff_stage2 <- ed_table[row_index,]$diff_stage2
   diff_stage1 <- ed_table[row_index,]$diff_stage1
   noise_sd <- ed_table[row_index,]$noise_sd
-
+  w_weight <- ed_table[row_index,]$w_weight
   experiment_output <- run_experiment_hypothesis( row_index,
                                                   num_indvs , 
                                                  trtA_effect_stage1,
                                                  trtA_effect_stage2,
                                                   diff_stage1,
                                                   diff_stage2,
-                                                  noise_sd)
+                                                  noise_sd,
+                                                 num_replicas = options_replicas,
+                                                  w_weight)
   save(experiment_output, file = paste0("./", scenario_folder, "/",
                                        
                                         
@@ -388,6 +412,7 @@ for (row_index in 1:dim(ed_table)[1]){
                                         "_trtA_effect_stage2",  trtA_effect_stage2,
                                         "_diff_stage1",  diff_stage1,
                                         "_diff_stage2",  diff_stage2,
+                                        "_w_weight",  w_weight,
                                         "_noisesd", noise_sd,
                                         "_", options_numcpus,
                                         "_", options_jobid,
