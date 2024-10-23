@@ -158,6 +158,8 @@ ensure_dir_exist(final_table_folder)
                            # num_replicas <- 5000
                            # w_weight <- 0.4
                            #noise_sd <- 1
+                           
+                           #Error in { : task 1293 failed - "'ref' must be an existing level"
                            example_data <- spcd_data(num_indvs, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, noise_sd)
                            
                            #####add while loop to avoid error from data generation process
@@ -372,7 +374,7 @@ if (options_replicas == 5000){
                                  diff_stage2_vector = c(0),
                                  #noise_sd_vector = c(1, 4, 8, 16))
                                  #noise_sd_vector = c(1, 4),
-                                 noise_sd_vector = c(1, 4),
+                                 noise_sd_vector = c(1),
                                  #w_weight_vector = c (0.4, 0.5, 0.6)
                                  w_weight_vector = c (0.6, 0.7, 0.8))
 }
