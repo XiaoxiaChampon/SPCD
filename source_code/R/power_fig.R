@@ -78,7 +78,9 @@ continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.6)
 
 binary_power_data <- power_data(final_table, 1, 2 ,1, 0.6)
 continuous_power_data <- power_data(final_table, 3, 4 ,1 ,0.8)
-continuous_power_logmap <- power_data(final_table, 5, 6 ,1, 0.6)
+continuous_power_data06 <- power_data(final_table, 3, 4 ,1 ,0.6)
+continuous_power_logmap <- power_data(final_table, 5, 6 ,1, 0.8)
+continuous_power_logmap06 <- power_data(final_table, 5, 6 ,1, 0.6)
 continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.6)
 
 # num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
@@ -120,7 +122,9 @@ continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.6)
 
 binary_power_data_map <- power_data(final_table, 9, 10 ,1)
 continuous_power_data_map <- power_data(final_table, 11, 12,1, 0.8)
-continuous_power_logmap_map <- power_data(final_table, 13, 14,1)
+continuous_power_data_map06 <- power_data(final_table, 11, 12,1, 0.6)
+continuous_power_logmap_map <- power_data(final_table, 13, 14,1 , 0.8)
+continuous_power_logmap_map06 <- power_data(final_table, 13, 14,1, 0.6)
 continuous_power_expmap_map <- power_data(final_table, 15, 16,1)
 
 
@@ -130,42 +134,191 @@ get_typeI_weight <- function(weight_w){
   continuous_power_logmap <- power_data(final_table, 5, 6 ,1, weight_w)
   continuous_power_expmap <- power_data(final_table, 7, 8 ,1, weight_w)
   print("\n continuous \t")
-  continuous_power_data
+  print(continuous_power_data)
   print("\n continuous log \t")
-  continuous_power_logmap
+  print(continuous_power_logmap)
   print("\n continuous exp \t")
-  continuous_power_expmap
+  print(continuous_power_expmap)
   
   continuous_power_data_map <- power_data(final_table, 11, 12,1, weight_w)
   print("\ n continuous map \t")
-  continuous_power_data_map
+  print(continuous_power_data_map)
   continuous_power_logmap_map <- power_data(final_table, 13, 14,1, weight_w)
   print("\n continuous log map \t")
-  continuous_power_logmap_map
+  print(continuous_power_logmap_map)
   continuous_power_expmap_map <- power_data(final_table, 15, 16,1, weight_w)
   print("\n continuous exp map \t")
-  continuous_power_expmap_map
+  print(continuous_power_expmap_map)
   
   continuous_power_data_map_bay <- power_data(final_table, 23, 24,1, weight_w)
   print("\ n continuous map bay \t")
-  continuous_power_data_map_bay
+  print(continuous_power_data_map_bay)
   continuous_power_logmap_map_bay <- power_data(final_table, 25, 26,1, weight_w)
   print("\ n continuous map log bay \t") 
-  continuous_power_logmap_map_bay
+  print(continuous_power_logmap_map_bay)
   continuous_power_expmap_map_bay <- power_data(final_table, 27, 28,1, weight_w)
   print("\ n continuous map exp bay \t") 
-  continuous_power_expmap_map_bay
+  print(continuous_power_expmap_map_bay)
   
 }
 
+get_typeI_weight(0.6)
+################################################################################
+# [1] "\n continuous \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output             200                  2                  1           0           0 0.01538462 0.03776224   A
+# experiment_output.1           400                  2                  1           0           0 0.03076923 0.06013986   A
+# experiment_output.2           600                  2                  1           0           0 0.02797203 0.06713287   A
+# experiment_output1            200                  2                  1           0           0 0.00979021 0.03216783   B
+# experiment_output.11          400                  2                  1           0           0 0.02657343 0.05454545   B
+# experiment_output.21          600                  2                  1           0           0 0.02517483 0.05454545   B
+# [1] "\n continuous log \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2       power    power01 trt
+# experiment_output             200                  2                  1           0           0 0.008391608 0.03636364   A
+# experiment_output.1           400                  2                  1           0           0 0.016783217 0.04055944   A
+# experiment_output.2           600                  2                  1           0           0 0.027972028 0.06013986   A
+# experiment_output1            200                  2                  1           0           0 0.012587413 0.03496503   B
+# experiment_output.11          400                  2                  1           0           0 0.022377622 0.05454545   B
+# experiment_output.21          600                  2                  1           0           0 0.029370629 0.05874126   B
+# [1] "\n continuous exp \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output             200                  2                  1           0           0 0.01958042 0.04615385   A
+# experiment_output.1           400                  2                  1           0           0 0.03076923 0.05594406   A
+# experiment_output.2           600                  2                  1           0           0 0.02237762 0.05314685   A
+# experiment_output1            200                  2                  1           0           0 0.01398601 0.04475524   B
+# experiment_output.11          400                  2                  1           0           0 0.01958042 0.05034965   B
+# experiment_output.21          600                  2                  1           0           0 0.02937063 0.05734266   B
+# [1] " n continuous map \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output             200                  2                  1           0           0 0.01398601 0.04475524   A
+# experiment_output.1           400                  2                  1           0           0 0.02797203 0.07132867   A
+# experiment_output.2           600                  2                  1           0           0 0.03076923 0.07412587   A
+# experiment_output1            200                  2                  1           0           0 0.01818182 0.03916084   B
+# experiment_output.11          400                  2                  1           0           0 0.03076923 0.05594406   B
+# experiment_output.21          600                  2                  1           0           0 0.02657343 0.05314685   B
+# [1] "\n continuous log map \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2       power    power01 trt
+# experiment_output             200                  2                  1           0           0 0.006993007 0.03356643   A
+# experiment_output.1           400                  2                  1           0           0 0.022377622 0.05034965   A
+# experiment_output.2           600                  2                  1           0           0 0.030769231 0.06153846   A
+# experiment_output1            200                  2                  1           0           0 0.011188811 0.03636364   B
+# experiment_output.11          400                  2                  1           0           0 0.023776224 0.05034965   B
+# experiment_output.21          600                  2                  1           0           0 0.029370629 0.06993007   B
+# [1] "\n continuous exp map \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output             200                  2                  1           0           0 0.02517483 0.05174825   A
+# experiment_output.1           400                  2                  1           0           0 0.02237762 0.05734266   A
+# experiment_output.2           600                  2                  1           0           0 0.02937063 0.06293706   A
+# experiment_output1            200                  2                  1           0           0 0.01258741 0.03636364   B
+# experiment_output.11          400                  2                  1           0           0 0.04195804 0.06573427   B
+# experiment_output.21          600                  2                  1           0           0 0.02797203 0.07132867   B
+# [1] " n continuous map bay \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output             200                  2                  1           0           0 0.03076923 0.05594406   A
+# experiment_output.1           400                  2                  1           0           0 0.01538462 0.04335664   A
+# experiment_output.2           600                  2                  1           0           0 0.01958042 0.05174825   A
+# experiment_output1            200                  2                  1           0           0 0.02377622 0.04895105   B
+# experiment_output.11          400                  2                  1           0           0 0.02797203 0.06713287   B
+# experiment_output.21          600                  2                  1           0           0 0.03496503 0.05314685   B
+# [1] " n continuous map log bay \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output             200                  2                  1           0           0 0.01118881 0.03216783   A
+# experiment_output.1           400                  2                  1           0           0 0.01958042 0.05454545   A
+# experiment_output.2           600                  2                  1           0           0 0.02797203 0.05454545   A
+# experiment_output1            200                  2                  1           0           0 0.01958042 0.03496503   B
+# experiment_output.11          400                  2                  1           0           0 0.02937063 0.05594406   B
+# experiment_output.21          600                  2                  1           0           0 0.03496503 0.06433566   B
+# [1] " n continuous map exp bay \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2       power    power01 trt
+# experiment_output             200                  2                  1           0           0 0.005594406 0.03356643   A
+# experiment_output.1           400                  2                  1           0           0 0.029370629 0.07272727   A
+# experiment_output.2           600                  2                  1           0           0 0.043356643 0.08251748   A
+# experiment_output1            200                  2                  1           0           0 0.016783217 0.03636364   B
+# experiment_output.11          400                  2                  1           0           0 0.029370629 0.05314685   B
+# experiment_output.21          600                  2                  1           0           0 0.033566434 0.06153846   B
+######################################################################################################################
 
 
 
 
+get_typeI_weight(0.8)
+#################################################
+# [1] "\n continuous \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.01398601 0.05594406   A
+# experiment_output.7           400                  2                  1           0           0 0.02517483 0.05314685   A
+# experiment_output.8           600                  2                  1           0           0 0.03636364 0.07272727   A
+# experiment_output.61          200                  2                  1           0           0 0.01818182 0.04055944   B
+# experiment_output.71          400                  2                  1           0           0 0.02517483 0.05454545   B
+# experiment_output.81          600                  2                  1           0           0 0.03216783 0.05594406   B
+# [1] "\n continuous log \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.01678322 0.04055944   A
+# experiment_output.7           400                  2                  1           0           0 0.02797203 0.05314685   A
+# experiment_output.8           600                  2                  1           0           0 0.02937063 0.07412587   A
+# experiment_output.61          200                  2                  1           0           0 0.01538462 0.04755245   B
+# experiment_output.71          400                  2                  1           0           0 0.01398601 0.03216783   B
+# experiment_output.81          600                  2                  1           0           0 0.02237762 0.05314685   B
+# [1] "\n continuous exp \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.01118881 0.02797203   A
+# experiment_output.7           400                  2                  1           0           0 0.01818182 0.05174825   A
+# experiment_output.8           600                  2                  1           0           0 0.02377622 0.04475524   A
+# experiment_output.61          200                  2                  1           0           0 0.01538462 0.04055944   B
+# experiment_output.71          400                  2                  1           0           0 0.03076923 0.06013986   B
+# experiment_output.81          600                  2                  1           0           0 0.02937063 0.06433566   B
+# [1] " n continuous map \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.02657343 0.05034965   A
+# experiment_output.7           400                  2                  1           0           0 0.03216783 0.06433566   A
+# experiment_output.8           600                  2                  1           0           0 0.03076923 0.06713287   A
+# experiment_output.61          200                  2                  1           0           0 0.01118881 0.04055944   B
+# experiment_output.71          400                  2                  1           0           0 0.02517483 0.05034965   B
+# experiment_output.81          600                  2                  1           0           0 0.03496503 0.06993007   B
+# [1] "\n continuous log map \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.01118881 0.04055944   A
+# experiment_output.7           400                  2                  1           0           0 0.03216783 0.05314685   A
+# experiment_output.8           600                  2                  1           0           0 0.01818182 0.05314685   A
+# experiment_output.61          200                  2                  1           0           0 0.01818182 0.04055944   B
+# experiment_output.71          400                  2                  1           0           0 0.03216783 0.06573427   B
+# experiment_output.81          600                  2                  1           0           0 0.02377622 0.04895105   B
+# [1] "\n continuous exp map \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2       power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.008391608 0.04195804   A
+# experiment_output.7           400                  2                  1           0           0 0.036363636 0.06433566   A
+# experiment_output.8           600                  2                  1           0           0 0.037762238 0.06853147   A
+# experiment_output.61          200                  2                  1           0           0 0.020979021 0.04475524   B
+# experiment_output.71          400                  2                  1           0           0 0.029370629 0.06573427   B
+# experiment_output.81          600                  2                  1           0           0 0.030769231 0.06573427   B
+# [1] " n continuous map bay \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.03356643 0.06853147   A
+# experiment_output.7           400                  2                  1           0           0 0.02237762 0.06573427   A
+# experiment_output.8           600                  2                  1           0           0 0.03216783 0.06853147   A
+# experiment_output.61          200                  2                  1           0           0 0.02377622 0.05034965   B
+# experiment_output.71          400                  2                  1           0           0 0.02517483 0.04475524   B
+# experiment_output.81          600                  2                  1           0           0 0.03076923 0.06433566   B
+# [1] " n continuous map log bay \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.01678322 0.04475524   A
+# experiment_output.7           400                  2                  1           0           0 0.02657343 0.06153846   A
+# experiment_output.8           600                  2                  1           0           0 0.02657343 0.05174825   A
+# experiment_output.61          200                  2                  1           0           0 0.01678322 0.04475524   B
+# experiment_output.71          400                  2                  1           0           0 0.03356643 0.07552448   B
+# experiment_output.81          600                  2                  1           0           0 0.02937063 0.06293706   B
+# [1] " n continuous map exp bay \t"
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.01398601 0.04195804   A
+# experiment_output.7           400                  2                  1           0           0 0.02657343 0.06013986   A
+# experiment_output.8           600                  2                  1           0           0 0.02937063 0.05874126   A
+# experiment_output.61          200                  2                  1           0           0 0.03636364 0.05874126   B
+# experiment_output.71          400                  2                  1           0           0 0.02797203 0.05734266   B
+# experiment_output.81          600                  2                  1           0           0 0.02517483 0.05874126   B
 
 
 
-
+#####################################################
 # 
 # num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
 # experiment_output.6           200                  2                  1           0           0 0.02657343 0.05034965   A
@@ -184,13 +337,17 @@ get_typeI_weight <- function(weight_w){
 
 ###bayesian results
 #non map
-continuous_power_data_bay <- power_data(final_table, 17, 18 ,1 )
-continuous_power_logmap_bay <- power_data(final_table, 19, 20 ,1)
+continuous_power_data_bay <- power_data(final_table, 17, 18 ,1, 0.8 )
+continuous_power_data_bay06 <- power_data(final_table, 17, 18 ,1, 0.6 )
+continuous_power_logmap_bay <- power_data(final_table, 19, 20 ,1, 0.8)
+continuous_power_logmap_bay06 <- power_data(final_table, 19, 20 ,1, 0.6)
 continuous_power_expmap_bay <- power_data(final_table, 21, 22 ,1)
 
 #map
 continuous_power_data_map_bay <- power_data(final_table, 23, 24,1, 0.8)
-continuous_power_logmap_map_bay <- power_data(final_table, 25, 26,1)
+continuous_power_data_map_bay_06 <- power_data(final_table, 23, 24,1, 0.6)
+continuous_power_logmap_map_bay <- power_data(final_table, 25, 26,1, 0.8)
+continuous_power_logmap_map_bay06 <- power_data(final_table, 25, 26,1, 0.6)
 continuous_power_expmap_map_bay <- power_data(final_table, 27, 28,1)
 
 
@@ -239,8 +396,10 @@ save(binary_power_data, continuous_power_data, continuous_power_logmap, continuo
 ####################################################
 library(ggplot2)
 library(data.table)
+library(gridExtra)
 power_fig_fun <- function (binary_power_data, diff_stage2, trtA_effect_stage1, trtA_effect_stage2){
-  power_by_time_new_long <- melt(setDT(binary_power_data), id.vars = c("num_subjects", "trtA_effect_stage1","trtA_effect_stage2",  "diff_stage2", "trt"),
+  #delete colun diff_stage1
+  power_by_time_new_long <- melt(setDT(binary_power_data[,-c(4)]), id.vars = c("num_subjects", "trtA_effect_stage1","trtA_effect_stage2",  "diff_stage2", "trt"),
                                  variable.name = "power_both")
   ########################################################
   ########################################################
@@ -249,8 +408,8 @@ power_fig_fun <- function (binary_power_data, diff_stage2, trtA_effect_stage1, t
   power_by_time_new_long$trt_new <- c('"Treat A"', '"Treat B"')[as.factor(power_by_time_new_long$trt)]
   power_by_time_new_long$power_both_new <- c('alpha*" = 0.05"', 'alpha*" = 0.10"')[power_by_time_new_long$power_both]
   
-  power_by_time_plot_new=ggplot(power_by_time_new_long[power_by_time_new_long$trt == "A" & power_by_time_new_long$diff_stage2==1.5,],
-                                aes(x=trtA_effect,y=unlist(value),color=as.factor(num_subjects),shape=as.factor(num_subjects)))+
+  power_by_time_plot_new=ggplot(power_by_time_new_long[power_by_time_new_long$trt == "A" & power_by_time_new_long$diff_stage2==1.5 & power_by_time_new_long$trtA_effect_stage1==5,],
+                                aes(x=trtA_effect_stage2,y=unlist(value),color=as.factor(num_subjects),shape=as.factor(num_subjects)))+
     geom_line() +
     facet_grid(as.factor(trt_new)~power_both_new,
                labeller = label_parsed)+
@@ -279,6 +438,56 @@ power_fig_fun <- function (binary_power_data, diff_stage2, trtA_effect_stage1, t
   #print(power_by_time_plot_new)
   print(grid.arrange(power_by_time_plot_new, power_by_time_plot_new_B, nrow = 2))
 }
+
+
+# continuous_power_data <- power_data(final_table, 3, 4 ,1 ,0.8)
+# continuous_power_data06 <- power_data(final_table, 3, 4 ,1 ,0.6)
+# continuous_power_logmap <- power_data(final_table, 5, 6 ,1, 0.8)
+# continuous_power_logmap06 <- power_data(final_table, 5, 6 ,1, 0.6)
+#continuous_power_data_map_bay <- power_data(final_table, 23, 24,1, 0.8)
+#continuous_power_data_map_bay_06 <- power_data(final_table, 23, 24,1, 0.6)
+
+#######################################################
+#weight 0.6
+power_fig_fun  (continuous_power_data06 , 1.5, 3)
+power_fig_fun  (continuous_power_data_map06 , 1.5, 3)
+
+
+
+power_fig_fun  (continuous_power_logmap06, 1.5, 3)
+power_fig_fun  (continuous_power_logmap_map06, 1.5, 3)
+
+power_fig_fun(continuous_power_data_bay06, 1.5, 3)
+power_fig_fun  (continuous_power_data_map_bay_06 , 1.5, 3)
+
+
+power_fig_fun(continuous_power_logmap_bay06, 1.5, 3)
+power_fig_fun(continuous_power_logmap_map_bay06, 1.5, 3)
+
+#weight 0.8
+power_fig_fun  (continuous_power_data , 1.5, 3)
+power_fig_fun  (continuous_power_data_map , 1.5, 3)
+
+
+
+power_fig_fun  (continuous_power_logmap, 1.5, 3)
+power_fig_fun  (continuous_power_logmap_map, 1.5, 3)
+
+power_fig_fun(continuous_power_data_bay, 1.5, 3)
+power_fig_fun  (continuous_power_data_map_bay , 1.5, 3)
+
+
+power_fig_fun(continuous_power_logmap_bay, 1.5, 3)
+power_fig_fun(continuous_power_logmap_map_bay, 1.5, 3)
+
+####################################################
+
+power_fig_fun  (continuous_power_data , 1.5, 3)
+power_fig_fun  (continuous_power_logmap , 1.5, 3)
+power_fig_fun  (continuous_power_data_map_bay , 1.5, 3)
+
+
+
 
 par(mfrow=c(2,3))
 #power_fig_fun  (binary_power_data)
