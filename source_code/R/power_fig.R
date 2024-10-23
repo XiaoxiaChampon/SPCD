@@ -38,30 +38,56 @@ load("/Users/xzhao17/Documents/GitHub/SPCD/output_spcd_test_typeI_bayesian_power
 # experiment_output.3          200                  2                  1           0           0        4
 # experiment_output.4          400                  2                  1           0           0        4
 # experiment_output.5          600                  2                  1           0           0        4
-power_data <- function(final_table, power_col, power01_col, noise_sd){
-  final_table <- final_table [final_table$noise_sd==noise_sd,]
-  #2 : trtA_effect_stage1 3:trtA_effect_stage2, 4 "diff_stage1" , 5:diff_stage2,  6: "noise_sd" 
+power_data <- function(final_table, power_col, power01_col, noise_sd, w_weight){
+  final_table_sub <- final_table [(final_table$noise_sd == noise_sd & final_table$` w_weight` == w_weight),]
+  #2 : trtA_effect_stage1 3:trtA_effect_stage2, 4 "diff_stage1" , 5:diff_stage2,  6: "noise_sd" , 7: w_weight
   #final_table <- final_table [,-c(3,5)]
-  final_table <- final_table [,-c(6)]
+  final_table_sub <- final_table_sub [,-c(6, 7)]
   #binary_result <- final_table[,1:3]
-  binary_result <- final_table[,1:7]
+  binary_result <- final_table_sub[,1:7]
   binary_result <- rbind(binary_result,binary_result)
   binary_result$power <- c(0)
   binary_result$power01 <- c(0)
   for ( i in 1:(dim(binary_result)[1]/2)){
-    binary_result$power[i] <- final_table$power[[i]][power_col]
-    binary_result$power[dim(binary_result)[1]/2+i] <- final_table$power[[i]][power01_col]
-    binary_result$power01[i] <- final_table$power01[[i]][power_col]
-    binary_result$power01[dim(binary_result)[1]/2+i] <- final_table$power01[[i]][power01_col]
+    binary_result$power[i] <- final_table_sub$power[[i]][power_col]
+    binary_result$power[dim(binary_result)[1]/2+i] <- final_table_sub$power[[i]][power01_col]
+    binary_result$power01[i] <- final_table_sub$power01[[i]][power_col]
+    binary_result$power01[dim(binary_result)[1]/2+i] <- final_table_sub$power01[[i]][power01_col]
     binary_result$trt <- c(rep("A",dim(binary_result)[1]/2),rep("B",dim(binary_result)[1]/2))
   }
   return(binary_result)
 }
 
-binary_power_data <- power_data(final_table, 1, 2 ,1)
-continuous_power_data <- power_data(final_table, 3, 4 ,1 )
-continuous_power_logmap <- power_data(final_table, 5, 6 ,1)
-continuous_power_expmap <- power_data(final_table, 7, 8 ,1)
+binary_power_data <- power_data(final_table, 1, 2 ,1, 0.4)
+continuous_power_data <- power_data(final_table, 3, 4 ,1 ,0.4)
+continuous_power_logmap <- power_data(final_table, 5, 6 ,1, 0.4)
+continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.4)
+
+
+binary_power_data <- power_data(final_table, 1, 2 ,1, 0.5)
+continuous_power_data <- power_data(final_table, 3, 4 ,1 ,0.5)
+continuous_power_logmap <- power_data(final_table, 5, 6 ,1, 0.5)
+continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.5)
+
+
+binary_power_data <- power_data(final_table, 1, 2 ,1, 0.6)
+continuous_power_data <- power_data(final_table, 3, 4 ,1 ,0.6)
+continuous_power_logmap <- power_data(final_table, 5, 6 ,1, 0.6)
+continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.6)
+
+
+binary_power_data <- power_data(final_table, 1, 2 ,1, 0.6)
+continuous_power_data <- power_data(final_table, 3, 4 ,1 ,0.8)
+continuous_power_logmap <- power_data(final_table, 5, 6 ,1, 0.6)
+continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.6)
+
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.01398601 0.05594406   A
+# experiment_output.7           400                  2                  1           0           0 0.02517483 0.05314685   A
+# experiment_output.8           600                  2                  1           0           0 0.03636364 0.07272727   A
+# experiment_output.61          200                  2                  1           0           0 0.01818182 0.04055944   B
+# experiment_output.71          400                  2                  1           0           0 0.02517483 0.05454545   B
+# experiment_output.81          600                  2                  1           0           0 0.03216783 0.05594406   B
 ##############################################################
 #noise sd <- 2 
 # binary_power_data2 <- power_data(final_table, 1, 2 ,2)
@@ -93,10 +119,61 @@ continuous_power_expmap <- power_data(final_table, 7, 8 ,1)
 # experiment_output.5          600         3.5         1.5 0.283   0.404   A
 
 binary_power_data_map <- power_data(final_table, 9, 10 ,1)
-continuous_power_data_map <- power_data(final_table, 11, 12,1)
+continuous_power_data_map <- power_data(final_table, 11, 12,1, 0.8)
 continuous_power_logmap_map <- power_data(final_table, 13, 14,1)
 continuous_power_expmap_map <- power_data(final_table, 15, 16,1)
 
+
+##############################results summary
+get_typeI_weight <- function(weight_w){
+  continuous_power_data <- power_data(final_table, 3, 4 ,1 , weight_w)
+  continuous_power_logmap <- power_data(final_table, 5, 6 ,1, weight_w)
+  continuous_power_expmap <- power_data(final_table, 7, 8 ,1, weight_w)
+  print("\n continuous \t")
+  continuous_power_data
+  print("\n continuous log \t")
+  continuous_power_logmap
+  print("\n continuous exp \t")
+  continuous_power_expmap
+  
+  continuous_power_data_map <- power_data(final_table, 11, 12,1, weight_w)
+  print("\ n continuous map \t")
+  continuous_power_data_map
+  continuous_power_logmap_map <- power_data(final_table, 13, 14,1, weight_w)
+  print("\n continuous log map \t")
+  continuous_power_logmap_map
+  continuous_power_expmap_map <- power_data(final_table, 15, 16,1, weight_w)
+  print("\n continuous exp map \t")
+  continuous_power_expmap_map
+  
+  continuous_power_data_map_bay <- power_data(final_table, 23, 24,1, weight_w)
+  print("\ n continuous map bay \t")
+  continuous_power_data_map_bay
+  continuous_power_logmap_map_bay <- power_data(final_table, 25, 26,1, weight_w)
+  print("\ n continuous map log bay \t") 
+  continuous_power_logmap_map_bay
+  continuous_power_expmap_map_bay <- power_data(final_table, 27, 28,1, weight_w)
+  print("\ n continuous map exp bay \t") 
+  continuous_power_expmap_map_bay
+  
+}
+
+
+
+
+
+
+
+
+
+# 
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.02657343 0.05034965   A
+# experiment_output.7           400                  2                  1           0           0 0.03216783 0.06433566   A
+# experiment_output.8           600                  2                  1           0           0 0.03076923 0.06713287   A
+# experiment_output.61          200                  2                  1           0           0 0.01118881 0.04055944   B
+# experiment_output.71          400                  2                  1           0           0 0.02517483 0.05034965   B
+# experiment_output.81          600                  2                  1           0           0 0.03496503 0.06993007   B
 #################################################################
 #noise sd <- 2
 # binary_power_data_map2 <- power_data(final_table, 9, 10 ,2)
@@ -112,7 +189,7 @@ continuous_power_logmap_bay <- power_data(final_table, 19, 20 ,1)
 continuous_power_expmap_bay <- power_data(final_table, 21, 22 ,1)
 
 #map
-continuous_power_data_map_bay <- power_data(final_table, 23, 24,1)
+continuous_power_data_map_bay <- power_data(final_table, 23, 24,1, 0.8)
 continuous_power_logmap_map_bay <- power_data(final_table, 25, 26,1)
 continuous_power_expmap_map_bay <- power_data(final_table, 27, 28,1)
 
@@ -135,6 +212,30 @@ save(binary_power_data, continuous_power_data, continuous_power_logmap, continuo
 # experiment_output.1           900           0 0.6612  0.6788   A
 # experiment_output1            600           0 0.6258  0.6456   B
 # experiment_output.11          900           0 0.6386  0.6538   B
+
+
+
+# continuous_power_data 
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.01398601 0.05594406   A
+# experiment_output.7           400                  2                  1           0           0 0.02517483 0.05314685   A
+# experiment_output.8           600                  2                  1           0           0 0.03636364 0.07272727   A
+# experiment_output.61          200                  2                  1           0           0 0.01818182 0.04055944   B
+# experiment_output.71          400                  2                  1           0           0 0.02517483 0.05454545   B
+# experiment_output.81          600                  2                  1           0           0 0.03216783 0.05594406   B
+# > continuous_power_data_map <- power_data(final_table, 11, 12,1, 0.8)
+# > continuous_power_data_map
+# num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2      power    power01 trt
+# experiment_output.6           200                  2                  1           0           0 0.02657343 0.05034965   A
+# experiment_output.7           400                  2                  1           0           0 0.03216783 0.06433566   A
+# experiment_output.8           600                  2                  1           0           0 0.03076923 0.06713287   A
+# experiment_output.61          200                  2                  1           0           0 0.01118881 0.04055944   B
+# experiment_output.71          400                  2                  1           0           0 0.02517483 0.05034965   B
+# experiment_output.81          600                  2                  1           0           0 0.03496503 0.06993007   B
+
+
+
+
 ####################################################
 library(ggplot2)
 library(data.table)
