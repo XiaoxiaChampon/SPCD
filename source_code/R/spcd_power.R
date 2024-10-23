@@ -447,5 +447,20 @@ if(run_parallel)
 # All Experiemnts Took: Time difference of 2.395469 mins power
 #All Experiemnts Took: Time difference of 1.483734 hours 
 
+# Track time for 
+# Num Subjects:	 600 
+# trtA_effect stage 1:	 5.5 
+# trtA_effect stage 2:	 5.5 
+# diff_stage1:	 0.5 
+# diff_stage2:	 6.5 
+# w_weight:	  
+#   noise_sd:	 1 
+# took: Time difference of 2.549495 secs 
+# ====================
+#   
+#   ====================
+#   All Experiemnts Took: Time difference of 1.483734 hours 
+# ====================
+
 #tyie I: All Experiemnts Took: Time difference of 4.932501 mins 
 #All Experiemnts Took: Time difference of 1.376206 mins 
