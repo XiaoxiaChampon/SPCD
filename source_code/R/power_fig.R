@@ -29,6 +29,8 @@
 #load("./output_spcd_test/final_table.RData")
 load("/Users/xzhao17/Documents/GitHub/SPCD/output_spcd_test_typeI_bayesian_power/spcd_power__1000_10_1.RData")
 
+final_table[,-c(9,10)]
+
 #type I
 # final_table[,1:6]
 #                           num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2 noise_sd
