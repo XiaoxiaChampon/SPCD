@@ -42,12 +42,16 @@ mapping_function_2 <- function(Y_cont) {
 
 
 
-spcd_data <- function(n, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, noise_sd){
+spcd_data <- function(n, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2, noise_sd, option_01){
   # Define parameters
-  #  n <- 600  # Total number of subjects
+  #  n <- 200  # Total number of subjects
   #  n_groups <- 3  # Two treatments and one placebo
-  # diff_stage1 <- 0.5
-  # diff_stage2 <- 1.5
+  # trtA_effect_stage1 <- 2
+  # trtA_effect_stage2 <- 1
+  # diff_stage1 <- 0
+  # diff_stage2 <- 0
+  # noise_sd <- 1
+  # option_01 <- 1
   n_subjects_per_group <- n / (n_groups+1)  # Subjects per group
   p_bin <- 0.5  # Probability for binary covariates
   covar1_mean <- 10  # Mean for continuous covariate 1
@@ -100,11 +104,22 @@ spcd_data <- function(n, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_
     beta_cont_stage1[5] * covariates$continuous_cov2 +
     rnorm(n, 0, noise_sd)  # Random noise
   
+  #covariates$continuous_response_stage1_baseline <- covariates$continuous_cov1 
+   
+  
   covariates$difference_base_stage1 <- covariates$continuous_response_stage1 - covariates$continuous_response_stage1_baseline
   
-  covariates$difference_base_stage1_min_max <- (covariates$difference_base_stage1- min( covariates$difference_base_stage1))/(max(covariates$difference_base_stage1)-min(covariates$difference_base_stage1))
+  if (option_01 == 1) {
+    covariates$difference_base_stage1_min_max <- covariates$difference_base_stage1/covariates$continuous_response_stage1_baseline
+    covariates$binary_response_stage1map <- ifelse (covariates$difference_base_stage1_min_max <= 0.5, 0, 1)
+  }
   
-  covariates$binary_response_stage1map <- ifelse (covariates$difference_base_stage1_min_max <= 0.5, 0, 1)
+  if (option_01 == 2) {
+    covariates$difference_base_stage1_min_max <- (covariates$difference_base_stage1- min( covariates$difference_base_stage1))/(max(covariates$difference_base_stage1)-min(covariates$difference_base_stage1))
+    covariates$binary_response_stage1map <- ifelse (covariates$difference_base_stage1_min_max <= 0.5, 0, 1)
+  }
+ 
+  
   
   
   # Logistic regression model adjusting for covariates
@@ -126,6 +141,7 @@ spcd_data <- function(n, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_
   non_responders2_map <- covariates %>%
     filter(treatment_stage1 == 0 & binary_response_stage1map_indivdual == 0 )  # Non-responders from placebo group
   
+ 
   
   ####
   find_non_responders <- function (non_responders, diff_stage2){
@@ -204,7 +220,8 @@ spcd_data <- function(n, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_
     non_responders$mapped_continuous_response_stage2 <- mapping_function(non_responders$continuous_response_stage2)
     non_responders$mapped_continuous_response_stage22 <- mapping_function_2(non_responders$continuous_response_stage2)
     
-    return(non_responders)
+    
+    return(non_responders )
   }
   ####
   
@@ -212,7 +229,7 @@ spcd_data <- function(n, n_groups, trtA_effect_stage1, trtA_effect_stage2, diff_
   non_responders_no <- find_non_responders (non_responders_nomap, diff_stage2)
   non_responders_yes <- find_non_responders (non_responders2_map, diff_stage2)
   
-  return(list("spcd_data" = non_responders_no, "spcd_data_yes" = non_responders_yes))
+  return(list("spcd_data" = non_responders_no, "spcd_data_yes" = non_responders_yes , "covariates" = covariates))
 }
 
 # example_data <- spcd_data (200, 3, 3, 0.5, 1.5) #100, 50, 50
