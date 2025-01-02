@@ -29,6 +29,8 @@
 #load("./output_spcd_test/final_table.RData")
 load("/Users/xzhao17/Documents/GitHub/SPCD/output_spcd_test_typeI_bayesian_power/spcd_power__1000_10_1.RData")
 
+final_table[,-c(9,10)]
+
 #type I
 # final_table[,1:6]
 #                           num_subjects trtA_effect_stage1 trtA_effect_stage2 diff_stage1 diff_stage2 noise_sd
@@ -38,8 +40,8 @@ load("/Users/xzhao17/Documents/GitHub/SPCD/output_spcd_test_typeI_bayesian_power
 # experiment_output.3          200                  2                  1           0           0        4
 # experiment_output.4          400                  2                  1           0           0        4
 # experiment_output.5          600                  2                  1           0           0        4
-power_data <- function(final_table, power_col, power01_col, noise_sd, w_weight){
-  final_table_sub <- final_table [(final_table$noise_sd == noise_sd & final_table$` w_weight` == w_weight),]
+power_data <- function(final_table, power_col, power01_col, noise_sd, w_weight, option_01){
+  final_table_sub <- final_table [(final_table$noise_sd == noise_sd & final_table$w_weight == w_weight) & final_table$option_01 == option_01,]
   #2 : trtA_effect_stage1 3:trtA_effect_stage2, 4 "diff_stage1" , 5:diff_stage2,  6: "noise_sd" , 7: w_weight
   #final_table <- final_table [,-c(3,5)]
   final_table_sub <- final_table_sub [,-c(6, 7)]
@@ -65,7 +67,13 @@ continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.4)
 
 
 binary_power_data <- power_data(final_table, 1, 2 ,1, 0.5)
-continuous_power_data <- power_data(final_table, 3, 4 ,1 ,0.5)
+
+########
+continuous_power_data <- power_data(final_table, 3, 4 ,1 ,0.5, 1)
+continuous_power_data2 <- power_data(final_table, 3, 4 ,1 ,0.5, 2)
+continuous_power_data 
+continuous_power_data2
+#########
 continuous_power_logmap <- power_data(final_table, 5, 6 ,1, 0.5)
 continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.5)
 
@@ -121,6 +129,12 @@ continuous_power_expmap <- power_data(final_table, 7, 8 ,1, 0.6)
 # experiment_output.5          600         3.5         1.5 0.283   0.404   A
 
 binary_power_data_map <- power_data(final_table, 9, 10 ,1)
+####################
+continuous_power_data_map <- power_data(final_table, 11, 12,1, 0.5, 1)
+continuous_power_data_map2 <- power_data(final_table, 11, 12,1, 0.5, 2)
+continuous_power_data_map
+continuous_power_data_map2
+########################
 continuous_power_data_map <- power_data(final_table, 11, 12,1, 0.8)
 continuous_power_data_map06 <- power_data(final_table, 11, 12,1, 0.6)
 continuous_power_logmap_map <- power_data(final_table, 13, 14,1 , 0.8)

@@ -46,11 +46,11 @@ Z_function <- function (diff_stage1, diff_stage2, diff_stage1_trt, diff_stage2_t
   return(Z_value)
 }
 
+#add the bias from the data
 
-
-hypothesis_testing <- function(non_responders, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2 , num_replicas, w_weight){
+hypothesis_testing <- function(non_responders, covariates, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2 , num_replicas, w_weight){
   # Perform logistic regression on pooled data
-  
+  #non_responders <- example_data$spcd_data_yes
   # Set "0" as the reference level
   non_responders$treatment_stage2 <- relevel(as.factor(non_responders$treatment_stage2), ref = "0")
   pooled_binary_model <- glm(binary_response_stage2 ~ binary_cov1 + binary_cov2 + continuous_cov1 + continuous_cov2 + treatment_stage2,
@@ -112,6 +112,9 @@ hypothesis_testing <- function(non_responders, trtA_effect_stage1, trtA_effect_s
   # Analyze mapped continuous response with linear regression
 cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + continuous_cov1 + continuous_cov2 + treatment_stage2,
                           data = non_responders)
+  
+   cont_model_stage1 <- lm(continuous_response_stage1 ~ binary_cov1 + binary_cov2 + continuous_cov1 + continuous_cov2 + treatment_stage1,
+                           data = covariates)
   #summary(mapped_cont_model)
   
   group_0 <- cont_model$fitted.values[index_0]
@@ -121,7 +124,9 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
   #t_test_result_1 <- t.test(group_0, group_1)
   #Z_function <- function (diff_stage1_trt, diff_stage2_trt, w_weight = 0.5)
   
-  
+  bias_trtA <- w_weight*cont_model$coefficients[6]-(1-w_weight)*cont_model_stage1$coefficients[6]
+  bias_trtB <- w_weight*cont_model$coefficients[7]-(1-w_weight)*cont_model_stage1$coefficients[7]
+  bias_comb <- c( bias_trtA,  bias_trtB)
   if (num_replicas == 1000){
     t_test_result_1 <- pnorm(-1.96 - Z_function(diff_stage1, diff_stage2,
                                                 non_responders$continuous_response_stage1[index_1]-non_responders$continuous_response_stage1[index_0] ,
@@ -406,7 +411,7 @@ cont_model <- lm(continuous_response_stage2 ~ binary_cov1 + binary_cov2 + contin
               "continous_map1" = continous_map1 , "continous_map2" = continous_map2,
               "continuous_result_bayesian" = continuous_result_bayesian,
               "continuous_result_bayesian_log" = continuous_result_bayesian_log,
-              "continuous_result_bayesian_exp" = continuous_result_bayesian_exp))
+              "continuous_result_bayesian_exp" = continuous_result_bayesian_exp, "bias_comb" = bias_comb))
   
   # return(list("binary_result" = binary_result, "continuous_result" = continuous_result, 
   #             "continous_map1" = continous_map1 , "continous_map2" = continous_map2))
