@@ -46,7 +46,7 @@ Z_function <- function (diff_stage1, diff_stage2, diff_stage1_trt, diff_stage2_t
   return(Z_value)
 }
 
-
+#add the bias from the data
 
 hypothesis_testing <- function(non_responders, covariates, trtA_effect_stage1, trtA_effect_stage2, diff_stage1, diff_stage2 , num_replicas, w_weight){
   # Perform logistic regression on pooled data
